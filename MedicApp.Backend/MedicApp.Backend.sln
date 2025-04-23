@@ -2,6 +2,12 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MedicApp.Api", "MedicApp.Api\MedicApp.Api.csproj", "{75EB840A-8FD6-4EAF-A369-6040703AA492}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MedicApp.Infrastructure", "MedicApp.Infrastructure\MedicApp.Infrastructure.csproj", "{9BAE07C1-6E58-45F6-A60C-E5FA327244E1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MedicApp.Application", "MedicApp.Application\MedicApp.Application.csproj", "{0DA07F3D-26FF-455F-8967-B97A68B18B74}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MedicApp.Domain", "MedicApp.Domain\MedicApp.Domain.csproj", "{398C280C-8994-4C5B-978F-9744CD89967A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +18,17 @@ Global
 		{75EB840A-8FD6-4EAF-A369-6040703AA492}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{75EB840A-8FD6-4EAF-A369-6040703AA492}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{75EB840A-8FD6-4EAF-A369-6040703AA492}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9BAE07C1-6E58-45F6-A60C-E5FA327244E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9BAE07C1-6E58-45F6-A60C-E5FA327244E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9BAE07C1-6E58-45F6-A60C-E5FA327244E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9BAE07C1-6E58-45F6-A60C-E5FA327244E1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0DA07F3D-26FF-455F-8967-B97A68B18B74}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0DA07F3D-26FF-455F-8967-B97A68B18B74}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0DA07F3D-26FF-455F-8967-B97A68B18B74}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0DA07F3D-26FF-455F-8967-B97A68B18B74}.Release|Any CPU.Build.0 = Release|Any CPU
+		{398C280C-8994-4C5B-978F-9744CD89967A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{398C280C-8994-4C5B-978F-9744CD89967A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{398C280C-8994-4C5B-978F-9744CD89967A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{398C280C-8994-4C5B-978F-9744CD89967A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
