@@ -18,6 +18,7 @@
 
     <ItemGroup>
       <Folder Include="LogReg\Query\" />
+      <Folder Include="Patient\Query\" />
     </ItemGroup>
 
     <ItemGroup>
