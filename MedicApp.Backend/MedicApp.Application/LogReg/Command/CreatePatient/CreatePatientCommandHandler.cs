@@ -1,12 +1,9 @@
 ﻿using MediatR;
-using MedicApp.Application.LogReg.Command;
-using MedicApp.Application.LogReg.Command.CreatePatient;
 using MedicApp.Domain.Dto;
 using MedicApp.Infrastructure.Models;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace MedicalVisits.Application.Auth.Commands.CreatePatient;
+namespace MedicApp.Application.LogReg.Command.CreatePatient;
 
 public class CreatePatientCommandHandler : IRequestHandler<CreatePatientCommand, AuthResult>
 {
@@ -35,8 +32,8 @@ public class CreatePatientCommandHandler : IRequestHandler<CreatePatientCommand,
         
         if (string.IsNullOrWhiteSpace(request.DriverRequest.Email) ||
             string.IsNullOrWhiteSpace(request.DriverRequest.Password) ||
-            string.IsNullOrWhiteSpace(request.DriverRequest.FirstName) ||
-            string.IsNullOrWhiteSpace(request.DriverRequest.LastName))
+            string.IsNullOrWhiteSpace(request.DriverRequest.Firstname) ||
+            string.IsNullOrWhiteSpace(request.DriverRequest.Lastname))
         {
             return new AuthResult
             {
@@ -62,8 +59,6 @@ public class CreatePatientCommandHandler : IRequestHandler<CreatePatientCommand,
             Appartaments = request.DriverRequest.Address.Appartaments,
             Country = request.DriverRequest.Address.Country,
             City = request.DriverRequest.Address.City,
-            Latitude = request.DriverRequest.Address.Latitude,
-            Longitude = request.DriverRequest.Address.Longitude
         };
 
 
@@ -71,8 +66,9 @@ public class CreatePatientCommandHandler : IRequestHandler<CreatePatientCommand,
         var user = new Account()
         {
             Email = request.DriverRequest.Email,
-            Firstname = request.DriverRequest.FirstName,
-            Lastname = request.DriverRequest.LastName,
+            Firstname = request.DriverRequest.Firstname,
+            Lastname = request.DriverRequest.Lastname,
+            Phonenumber = request.DriverRequest.Phonenumber,
             RoleId = role.Id,
             Addresses = new List<Address> { address }
         };
