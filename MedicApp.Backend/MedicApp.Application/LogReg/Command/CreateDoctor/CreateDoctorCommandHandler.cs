@@ -1,17 +1,18 @@
 ﻿using MediatR;
+using MedicApp.Application.LogReg.Command.CreatePatient;
 using MedicApp.Domain.Dto;
 using MedicApp.Domain.Dto.Responce;
 using MedicApp.Infrastructure.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace MedicApp.Application.LogReg.Command.CreatePatient;
+namespace MedicApp.Application.LogReg.Command.CreateDoctor;
 
-public class CreatePatientCommandHandler : IRequestHandler<CreatePatientCommand, AuthResult>
+public class CreateDoctorCommandHandler : IRequestHandler<CreateDoctorCommand, AuthResult>
 {
     private readonly IMediator _mediator;
     private readonly CourseWorkDbContext _context;
 
-    public CreatePatientCommandHandler(IMediator mediator,
+    public CreateDoctorCommandHandler(IMediator mediator,
         CourseWorkDbContext context)
     {
         _mediator = mediator;
@@ -19,7 +20,7 @@ public class CreatePatientCommandHandler : IRequestHandler<CreatePatientCommand,
     }
 
 
-    public async Task<AuthResult> Handle(CreatePatientCommand request, CancellationToken cancellationToken)
+    public async Task<AuthResult> Handle(CreateDoctorCommand request, CancellationToken cancellationToken)
     {
         if (request == null || request.DriverRequest == null)
         {
@@ -30,7 +31,7 @@ public class CreatePatientCommandHandler : IRequestHandler<CreatePatientCommand,
             };
         }
 
-        
+
         if (string.IsNullOrWhiteSpace(request.DriverRequest.Email) ||
             string.IsNullOrWhiteSpace(request.DriverRequest.Password) ||
             string.IsNullOrWhiteSpace(request.DriverRequest.Firstname) ||
@@ -52,7 +53,7 @@ public class CreatePatientCommandHandler : IRequestHandler<CreatePatientCommand,
             };
         }
 
-        
+
         var address = new Address
         {
             Street = request.DriverRequest.Address.Street,
@@ -63,7 +64,8 @@ public class CreatePatientCommandHandler : IRequestHandler<CreatePatientCommand,
         };
 
 
-        var role = await _context.Roles.SingleOrDefaultAsync(u => u.Name == "Patient");
+        var role = await _context.Roles.SingleOrDefaultAsync(u => u.Name == "Doctor",
+            cancellationToken: cancellationToken);
         var user = new Account()
         {
             Email = request.DriverRequest.Email,
@@ -73,12 +75,11 @@ public class CreatePatientCommandHandler : IRequestHandler<CreatePatientCommand,
             RoleId = role.Id,
             Addresses = new List<Address> { address }
         };
-        
-        
-        
+
+
         await _context.Accounts.AddAsync(user, cancellationToken);
-        
-        var result = await _context.SaveChangesAsync(cancellationToken) > 0; 
+
+        var result = await _context.SaveChangesAsync(cancellationToken) > 0;
         if (!result)
         {
             return new AuthResult
@@ -87,14 +88,14 @@ public class CreatePatientCommandHandler : IRequestHandler<CreatePatientCommand,
             };
         }
 
-        
+
         string token;
         try
         {
             token = await _mediator.Send(new GenerateAccessTokenCommand
             {
                 User = user,
-                Role = "Patient"
+                Role = "Doctor"
             }, cancellationToken);
         }
         catch (Exception ex)
@@ -105,17 +106,23 @@ public class CreatePatientCommandHandler : IRequestHandler<CreatePatientCommand,
                 Error = $"Failed to generate access token: {ex.Message}"
             };
         }
-
-        var patientProfile = new Patient()
+        
+        int[] selectedSpecializationIds = new int[] { 1, 2 };
+        
+        var specializations = await _context.Specializations
+            .Where(s => selectedSpecializationIds.Contains(s.Id))
+            .ToListAsync(cancellationToken: cancellationToken);
+        
+        
+        var doctorProfile = new Doctor()
         {
             AccountId = user.Id,
+            Specializations = specializations,
         };
 
 
-        
-            _context.Patients.Add(patientProfile);
-            await _context.SaveChangesAsync(cancellationToken);
-        
+        _context.Doctors.Add(doctorProfile);
+        await _context.SaveChangesAsync(cancellationToken);
 
 
         return new AuthResult
@@ -126,7 +133,7 @@ public class CreatePatientCommandHandler : IRequestHandler<CreatePatientCommand,
                 UserId = user.Id,
                 Email = user.Email,
                 Token = token,
-                Role = "Patient",
+                Role = "Doctor",
                 FirstName = user.Firstname,
                 LastName = user.Lastname,
             }
