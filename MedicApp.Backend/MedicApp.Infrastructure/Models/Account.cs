@@ -17,9 +17,13 @@ public partial class Account
 
     public string Email { get; set; } = null!;
 
+    public int RoleId { get; set; }
+
     public virtual ICollection<Address> Addresses { get; set; } = new List<Address>();
 
     public virtual Doctor? Doctor { get; set; }
 
     public virtual Patient? Patient { get; set; }
+
+    public virtual Role Role { get; set; } = null!;
 }

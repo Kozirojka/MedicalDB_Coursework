@@ -31,6 +31,8 @@ public partial class CourseWorkDbContext : DbContext
 
     public virtual DbSet<RequestMedicine> RequestMedicines { get; set; }
 
+    public virtual DbSet<Role> Roles { get; set; }
+
     public virtual DbSet<Schedule> Schedules { get; set; }
 
     public virtual DbSet<ScheduleInterval> ScheduleIntervals { get; set; }
@@ -68,6 +70,11 @@ public partial class CourseWorkDbContext : DbContext
             entity.Property(e => e.Phonenumber)
                 .HasMaxLength(20)
                 .HasColumnName("phonenumber");
+
+            entity.HasOne(d => d.Role).WithMany(p => p.Accounts)
+                .HasForeignKey(d => d.RoleId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_account_role");
         });
 
         modelBuilder.Entity<Address>(entity =>
@@ -260,6 +267,17 @@ public partial class CourseWorkDbContext : DbContext
                 .HasForeignKey(d => d.RequestId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("request_medicines_request_id_fkey");
+        });
+
+        modelBuilder.Entity<Role>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("Role_pkey");
+
+            entity.ToTable("Role");
+
+            entity.HasIndex(e => e.Name, "Role_Name_key").IsUnique();
+
+            entity.Property(e => e.Name).HasMaxLength(50);
         });
 
         modelBuilder.Entity<Schedule>(entity =>
