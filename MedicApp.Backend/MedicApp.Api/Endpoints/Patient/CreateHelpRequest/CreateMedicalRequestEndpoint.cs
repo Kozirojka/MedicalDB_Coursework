@@ -18,4 +18,4 @@ public class CreateMedicalRequestEndpoint : IEndpoint
         
         return Results.Ok(result);
     }
-}
+}    
