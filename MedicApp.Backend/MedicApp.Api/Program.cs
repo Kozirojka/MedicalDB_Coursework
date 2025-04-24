@@ -4,6 +4,8 @@ using MedicApp.Application.LogReg.Command;
 using MedicApp.Application.LogReg.Command.CreatePatient;
 using MedicApp.Domain.Configurations;
 using MedicApp.Infrastructure.Models;
+using MedicApp.Infrastructure.Services.GoogleMapsApi;
+using MedicApp.Infrastructure.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +16,9 @@ builder.Services.AddDbContext<CourseWorkDbContext>(options =>
 
 builder.Services.AddSwaggerWithJwtSupport();
 builder.Services.AddJwtAuthentication(builder.Configuration);
+builder.Services.AddScoped<IGeocodingService, GeocodingService>();
+builder.Services.AddScoped<IRouteService, RouteService>();
+
 
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));  // Це автоматично зареєструє всі обробники в поточній збірці
 builder.Services.AddMediatR(cfg =>

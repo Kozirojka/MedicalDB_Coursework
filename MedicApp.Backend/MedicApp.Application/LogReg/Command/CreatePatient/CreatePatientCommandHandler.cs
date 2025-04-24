@@ -106,7 +106,7 @@ public class CreatePatientCommandHandler : IRequestHandler<CreatePatientCommand,
             };
         }
 
-        var patientProfile = new Patient()
+        var patientProfile = new Infrastructure.Models.Patient()
         {
             AccountId = user.Id,
         };
