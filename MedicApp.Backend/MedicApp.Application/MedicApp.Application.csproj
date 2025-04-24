@@ -20,6 +20,7 @@
     <ItemGroup>
       <Folder Include="Admin\Command\" />
       <Folder Include="Admin\Query\" />
+      <Folder Include="Doctor\" />
       <Folder Include="LogReg\Query\" />
       <Folder Include="Patient\Query\" />
     </ItemGroup>

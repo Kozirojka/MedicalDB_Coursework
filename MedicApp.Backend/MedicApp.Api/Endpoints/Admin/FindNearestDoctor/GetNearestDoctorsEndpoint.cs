@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MedicApp.Api.Endpoints.Admin.FindNearestDoctor;
 
-public class GetNearestDoctorsEndpoint(IMediator _mediator) : IEndpoint
+public class GetNearestDoctorsEndpoint : IEndpoint
 {
     public void RegisterEndpoints(IEndpointRouteBuilder endpoints)
     {

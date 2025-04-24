@@ -2,7 +2,7 @@ using MediatR;
 using MedicApp.Application.LogReg.Command.CreatePatient;
 using MedicApp.Domain.Dto.Requests;
 
-namespace MedicApp.Api.Endpoints.CreatePatientEndpoint;
+namespace MedicApp.Api.Endpoints.Auth.CreatePatient;
 
 
 

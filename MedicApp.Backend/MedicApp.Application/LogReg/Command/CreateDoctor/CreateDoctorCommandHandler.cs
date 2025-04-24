@@ -114,7 +114,7 @@ public class CreateDoctorCommandHandler : IRequestHandler<CreateDoctorCommand, A
             .ToListAsync(cancellationToken: cancellationToken);
         
         
-        var doctorProfile = new Doctor()
+        var doctorProfile = new Infrastructure.Models.Doctor()
         {
             AccountId = user.Id,
             Specializations = specializations,

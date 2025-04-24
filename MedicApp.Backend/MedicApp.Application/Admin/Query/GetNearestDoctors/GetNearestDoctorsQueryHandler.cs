@@ -71,7 +71,7 @@ public class GetNearestDoctorsQueryHandler : IRequestHandler<GetNearestDoctorsQu
     }
 
     private async Task<List<DoctorProfileWithDistance>> CalculateDistancesAsync(
-        List<Doctor> doctors,
+        List<Infrastructure.Models.Doctor> doctors,
         Coordinate patientCoordinates)
     {
         var doctorDistances = new List<DoctorProfileWithDistance>();

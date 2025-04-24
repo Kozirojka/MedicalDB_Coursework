@@ -6,15 +6,14 @@ namespace MedicApp.Api.Endpoints.Admin.PendingVisitRequest;
 
 public sealed record ListOfUsers(List<VisitResponceDto> Visit);
 
-public class GetPendingVisitRequests(IMediator mediator) : IEndpoint
+public class GetPendingVisitRequests() : IEndpoint
 {
-
     public void RegisterEndpoints(IEndpointRouteBuilder endpoints)
     {
         endpoints.MapGet("/api/v2/admin/visit-requests", Handler);
     }
 
-    private async Task<IResult> Handler(HttpContext context)
+    private async Task<IResult> Handler(HttpContext context, IMediator mediator)
     {
         var command = new FindAppendingRequestsQuery();
         var result = await mediator.Send(command);

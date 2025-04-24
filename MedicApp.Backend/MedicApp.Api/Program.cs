@@ -1,4 +1,5 @@
 using System.Reflection;
+using MedicalVisits.Models.Configurations;
 using MedicApp.Api.Extension;
 using MedicApp.Application.LogReg.Command;
 using MedicApp.Application.LogReg.Command.CreatePatient;
@@ -18,6 +19,10 @@ builder.Services.AddSwaggerWithJwtSupport();
 builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.AddScoped<IGeocodingService, GeocodingService>();
 builder.Services.AddScoped<IRouteService, RouteService>();
+builder.Services.AddHttpClient();
+        
+builder.Services.Configure<GoogleMapsServiceSettings>(
+    builder.Configuration.GetSection("GoogleMaps"));
 
 
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));  // Це автоматично зареєструє всі обробники в поточній збірці
