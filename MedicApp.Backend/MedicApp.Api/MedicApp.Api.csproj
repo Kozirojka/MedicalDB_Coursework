@@ -31,7 +31,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Endpoints\Doctor\" />
+      <Folder Include="Endpoints\Doctor\Appointment\" />
     </ItemGroup>
 
 </Project>

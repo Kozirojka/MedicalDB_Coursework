@@ -13,5 +13,7 @@ public partial class ScheduleInterval
 
     public TimeOnly EndTime { get; set; }
 
+    public virtual ICollection<MedicalHelpRequest> MedicalHelpRequests { get; set; } = new List<MedicalHelpRequest>();
+
     public virtual Schedule Schedule { get; set; } = null!;
 }
