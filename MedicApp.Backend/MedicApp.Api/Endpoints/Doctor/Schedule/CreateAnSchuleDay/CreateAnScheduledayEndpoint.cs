@@ -1,4 +1,5 @@
 using MediatR;
+using MedicApp.Application.Doctor.Interval.Command.CreateScheduleDay;
 
 namespace MedicApp.Api.Endpoints.Doctor.Schedule.CreateAnSchuleDay;
 
@@ -9,10 +10,15 @@ public class CreateAnScheduledayEndpoint : IEndpoint
         endpoints.MapPost("/api/doctor/schedule", Handler);
     }
 
-    private async Task<IResult> Handler(IMediator mediator)
+    private async Task<IResult> Handler(HttpContext context,IMediator mediator, DateOnly dateTime)
     {
-        
+        var command = new CreateScheduleDayCommand(1, dateTime);
+        var result = await mediator.Send(command);
 
-        return Results.Ok();
+        if (result is false)
+        {
+            return Results.NotFound();
+        }
+        return Results.Ok(result);
     }
 }
