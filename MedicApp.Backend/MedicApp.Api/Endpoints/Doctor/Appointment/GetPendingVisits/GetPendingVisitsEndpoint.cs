@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using MedicApp.Domain.Dto.Responce;
 
-namespace MedicApp.Api.Endpoints.Doctor.GetPendingVisits;
+namespace MedicApp.Api.Endpoints.Doctor.Appointment.GetPendingVisits;
 
 public class GetPendingVisitsEndpoint : IEndpoint
 {

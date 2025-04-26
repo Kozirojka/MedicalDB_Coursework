@@ -31,7 +31,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Endpoints\Doctor\" />
+      <Folder Include="Endpoints\Doctor\Appointment\" />
+      <Folder Include="Endpoints\Doctor\Schedule\CreateAnInterval\" />
     </ItemGroup>
 
 </Project>

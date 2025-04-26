@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using MedicApp.Application.Doctor.AssignDoctorToVisit;
 
-namespace MedicApp.Api.Endpoints.Doctor.AssignDoctorToVisit;
+namespace MedicApp.Api.Endpoints.Doctor.Appointment.AssignDoctorToVisit;
 
 
 /// <summary>
