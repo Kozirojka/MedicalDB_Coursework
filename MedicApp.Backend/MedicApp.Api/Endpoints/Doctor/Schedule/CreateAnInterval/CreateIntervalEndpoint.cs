@@ -3,27 +3,28 @@ using MedicApp.Application.Doctor.Interval.Command.CreateTimeInterval;
 using MedicApp.Domain.Dto.Requests;
 using Microsoft.AspNetCore.Mvc;
 
-namespace MedicApp.Api.Endpoints.Doctor.Schedule.CreateAnInterval;
-
-public class CreateIntervalEndpoint : IEndpoint
+namespace MedicApp.Api.Endpoints.Doctor.Schedule.CreateAnInterval
 {
-    public void RegisterEndpoints(IEndpointRouteBuilder endpoints)
+    public class CreateIntervalEndpoint : IEndpoint
     {
-        endpoints.MapPost("/api/doctor/schedule/interval", Handler);
-    }
-
-    private async Task<IResult> Handler(HttpContext context, IMediator mediator, int scheduleId, [FromBody] IntervalDto intervals)
-    {
-        var doctorId = 1;
-        
-        var command = new CreateTimeIntervalCommand(scheduleId, doctorId, intervals);
-        var result = await mediator.Send(command);
-        if (result is false)
+        public void RegisterEndpoints(IEndpointRouteBuilder endpoints)
         {
-            return Results.NotFound();
+            endpoints.MapPost("/api/doctor/schedule/interval", Handler);
         }
-        
-        return Results.Ok(result);
-    }
 
+        private async Task<IResult> Handler(HttpContext context, IMediator mediator, int scheduleId, [FromBody] IntervalDto intervals)
+        {
+            var doctorId = 1;
+            
+            var command = new CreateTimeIntervalCommand(scheduleId, doctorId, intervals);
+            var result = await mediator.Send(command);
+
+            if (result is false)
+            {
+                return Results.NotFound();
+            }
+
+            return Results.Ok(result);
+        }
+    }
 }
