@@ -49,20 +49,25 @@ public class GetNearestDoctorsQueryHandler : IRequestHandler<GetNearestDoctorsQu
         
         
         
-        var patientAddress = patient?.Account.Addresses ?? throw new Exception("Patient address not found.");
+        var patientAddress = patient?.Account.Addresses.First();
+        if (patientAddress is null)
+        {
+            return null;
+        }
 
-        var patientCoordinates = await _geocodingService.GeocodeAddressAsync(patientAddress.First());
+        var patientCoordinates = await _geocodingService.GeocodeAddressAsync(patientAddress);
         ValidateCoordinates(patientCoordinates, "Patient coordinates not found.");
 
         var doctors = await _dbContext.Doctors
             .Include(d => d.Account)
-            .Where(d => d.Account.Addresses.First().Country == patientAddress.First().Country &&
-                        d.Account.Addresses.First().City == patientAddress.First().City)
+            .ThenInclude(d => d.Addresses)
+            .Where(d => d.Account.Addresses.First().Country == patientAddress.Country &&
+                        d.Account.Addresses.First().City == patientAddress.City)
             .ToListAsync(cancellationToken);
-
+        
         if (!doctors.Any())
         {
-            _logger.LogWarning("No doctors found in the city {City}.", patientAddress.First().City);
+            _logger.LogWarning("No doctors found in the city {City}.", patientAddress.City);
             return new List<DoctorProfileWithDistance>();
         }
 
@@ -79,8 +84,10 @@ public class GetNearestDoctorsQueryHandler : IRequestHandler<GetNearestDoctorsQu
 
         foreach (var doctor in doctors)
         {
-            var doctorCoordinates = await _geocodingService.GeocodeAddressAsync(doctor.Account.Addresses.First());
-            if (!IsValidCoordinates(doctorCoordinates)) continue;
+            var firstAddress = doctor.Account.Addresses.FirstOrDefault();
+            if (firstAddress == null) continue;
+
+            var doctorCoordinates = await _geocodingService.GeocodeAddressAsync(firstAddress);
 
             var distance = await _routeService.GetDistanceBetweenTwoPoints(patientCoordinates, doctorCoordinates);
             if (distance == null) continue;
@@ -90,7 +97,7 @@ public class GetNearestDoctorsQueryHandler : IRequestHandler<GetNearestDoctorsQu
                 DoctorId = doctor.Account.Id,
                 FirstName = doctor.Account.Firstname,
                 LastName = doctor.Account.Lastname,
-                Specialization = doctor.Specializations.First().ToString(),
+                Specialization = "Herolog",
                 Distance = distance
             });
         }

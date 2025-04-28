@@ -38,9 +38,11 @@ public class AttachVisitToDoctorCommandHandler : IRequestHandler<AttachVisitToDo
                 };
             }
 
-            var status = await _context.HelpRequestStatuses.SingleOrDefaultAsync(u => u.Name == "AssignedToDoctor");
+            var status = await _context.HelpRequestStatuses.SingleOrDefaultAsync(u => u.Name == "AssignedToDoctor", cancellationToken: cancellationToken);
+                
+            var doctorFinde = _context.Doctors.SingleOrDefault(u => u.AccountId == request.DoctorId);
             
-            visit.DoctorId = request.DoctorId;
+            visit.DoctorId = doctorFinde.Id;
             visit.StatusId = status.Id;
             
             

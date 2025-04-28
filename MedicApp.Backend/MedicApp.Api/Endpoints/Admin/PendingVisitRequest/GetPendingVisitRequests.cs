@@ -1,10 +1,9 @@
 ﻿using MediatR;
-using MedicalVisits.Application.Admin.Queries.FindAppendingRequests;
 using MedicApp.Application.Admin.Query.FindAppendingRequests;
+using MedicApp.Infrastructure.Extension;
 
 namespace MedicApp.Api.Endpoints.Admin.PendingVisitRequest;
 
-public sealed record ListOfUsers(List<VisitResponceDto> Visit);
 
 public class GetPendingVisitRequests() : IEndpoint
 {
@@ -20,9 +19,9 @@ public class GetPendingVisitRequests() : IEndpoint
 
         if (result == null || result.Count == 0)
         {
-            return Results.NotFound();
+            return Results.Ok(result);
         }
 
-        return Results.Ok(new ListOfUsers(result));
+        return Results.Ok(result);
     }
 }

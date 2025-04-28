@@ -103,6 +103,9 @@ public partial class CourseWork2Context : DbContext
                 .HasColumnName("country");
             entity.Property(e => e.Latitude).HasColumnName("latitude");
             entity.Property(e => e.Longitude).HasColumnName("longitude");
+            entity.Property(e => e.Region)
+                .HasMaxLength(255)
+                .HasColumnName("region");
             entity.Property(e => e.Street)
                 .HasMaxLength(100)
                 .HasColumnName("street");

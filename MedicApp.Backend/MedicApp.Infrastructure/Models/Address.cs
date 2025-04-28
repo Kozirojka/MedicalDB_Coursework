@@ -23,5 +23,7 @@ public partial class Address
 
     public double? Latitude { get; set; }
 
+    public string? Region { get; set; }
+
     public virtual Account Account { get; set; } = null!;
 }

@@ -5,15 +5,17 @@ using MedicApp.Domain.Dto;
 using MedicApp.Domain.Dto.Responce;
 using MedicApp.Infrastructure.Data;
 using MedicApp.Infrastructure.Models;
+using MedicApp.Infrastructure.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace MedicApp.Application.Auth.Command.CreateAdminCommand;
 
 public class CreateAdminCommandHandler(
     IMediator mediator,
-    CourseWork2Context context) : IRequestHandler<CreateDoctorCommand, AuthResult>
+    CourseWork2Context context,
+    IPasswordService passwordService) : IRequestHandler<CreateAdminCommand, AuthResult>
 {
-    public async Task<AuthResult> Handle(CreateDoctorCommand request, CancellationToken cancellationToken)
+    public async Task<AuthResult> Handle(CreateAdminCommand request, CancellationToken cancellationToken)
     {
         if (request == null || request.DriverRequest == null)
         {
@@ -66,7 +68,9 @@ public class CreateAdminCommandHandler(
             Lastname = request.DriverRequest.Lastname,
             Phonenumber = request.DriverRequest.Phonenumber,
             RoleId = role.Id,
-            Addresses = new List<Address> { address }
+            Addresses = new List<Address> { address },
+            PasswordHash = passwordService.HashPassword(request.DriverRequest.Password),
+
         };
 
 
@@ -88,7 +92,7 @@ public class CreateAdminCommandHandler(
             token = await mediator.Send(new GenerateAccessTokenCommand
             {
                 User = user,
-                Role = "Doctor"
+                Role = "Admin"
             }, cancellationToken);
         }
         catch (Exception ex)
