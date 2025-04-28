@@ -67,6 +67,7 @@ public partial class CourseWork2Context : DbContext
             entity.Property(e => e.Lastname)
                 .HasMaxLength(100)
                 .HasColumnName("lastname");
+            entity.Property(e => e.PasswordHash).HasMaxLength(255);
             entity.Property(e => e.Phonenumber)
                 .HasMaxLength(20)
                 .HasColumnName("phonenumber");
@@ -170,6 +171,12 @@ public partial class CourseWork2Context : DbContext
                 .HasColumnName("create_at");
             entity.Property(e => e.Description).HasColumnName("description");
             entity.Property(e => e.DoctorId).HasColumnName("doctor_id");
+            entity.Property(e => e.HelpRequestEnd)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("help_request_end");
+            entity.Property(e => e.HelpRequestStart)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("help_request_start");
             entity.Property(e => e.PatientId).HasColumnName("patient_id");
             entity.Property(e => e.ScheduleIntervalId).HasColumnName("schedule_interval_id");
             entity.Property(e => e.StatusId).HasColumnName("status_id");

@@ -8,10 +8,10 @@ namespace MedicApp.Application.Admin.Query.FindAppendingRequests;
 public class FindAppendingRequestsQueryHandler : IRequestHandler<FindAppendingRequestsQuery, List<VisitResponceDto>>
 {
     
-    private readonly CourseWorkDbContext _dbContext;
+    private readonly CourseWork2Context _dbContext;
 
     public FindAppendingRequestsQueryHandler(
-        CourseWorkDbContext dbContext)
+        CourseWork2Context dbContext)
     {
         _dbContext = dbContext;
     }

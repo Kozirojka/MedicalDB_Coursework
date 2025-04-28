@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using MedicApp.Application.Admin.AttachVisitToDoctor;
 
-namespace MedicApp.Api.Endpoints.Patient.AttachVisitResultToDoctor;
+namespace MedicApp.Api.Endpoints.Admin.AttachVisitResultToDoctor;
 
 public sealed record VisitDoctorInfoDto(int DoctorId, int VisitId);
 

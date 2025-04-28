@@ -7,10 +7,10 @@ namespace MedicApp.Application.Admin.AttachVisitToDoctor;
 public class AttachVisitToDoctorCommandHandler : IRequestHandler<AttachVisitToDoctorCommand, ResultOfAttach>
 {
     private readonly IMediator _mediator;
-    private readonly CourseWorkDbContext _context; 
+    private readonly CourseWork2Context _context; 
 
     public AttachVisitToDoctorCommandHandler(IMediator mediator,
-        CourseWorkDbContext context)
+        CourseWork2Context context)
     {
         _mediator = mediator;
         _context = context;

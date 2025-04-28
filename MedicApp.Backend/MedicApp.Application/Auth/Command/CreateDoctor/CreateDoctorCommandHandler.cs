@@ -1,19 +1,20 @@
 ﻿using MediatR;
-using MedicApp.Application.LogReg.Command.CreatePatient;
+using MedicApp.Application.LogReg.Command;
+using MedicApp.Application.LogReg.Command.CreateDoctor;
 using MedicApp.Domain.Dto;
 using MedicApp.Domain.Dto.Responce;
 using MedicApp.Infrastructure.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace MedicApp.Application.LogReg.Command.CreateDoctor;
+namespace MedicApp.Application.Auth.Command.CreateDoctor;
 
 public class CreateDoctorCommandHandler : IRequestHandler<CreateDoctorCommand, AuthResult>
 {
     private readonly IMediator _mediator;
-    private readonly CourseWorkDbContext _context;
+    private readonly CourseWork2Context _context;
 
     public CreateDoctorCommandHandler(IMediator mediator,
-        CourseWorkDbContext context)
+        CourseWork2Context context)
     {
         _mediator = mediator;
         _context = context;

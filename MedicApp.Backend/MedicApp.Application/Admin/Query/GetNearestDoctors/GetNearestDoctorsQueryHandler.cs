@@ -10,13 +10,13 @@ namespace MedicApp.Application.Admin.Query.GetNearestDoctors;
 
 public class GetNearestDoctorsQueryHandler : IRequestHandler<GetNearestDoctorsQuery, List<DoctorProfileWithDistance>>
 {
-    private readonly CourseWorkDbContext _dbContext;
+    private readonly CourseWork2Context _dbContext;
     private readonly IGeocodingService _geocodingService;
     private readonly IRouteService _routeService;
     private readonly ILogger<GetNearestDoctorsQueryHandler> _logger;
 
     public GetNearestDoctorsQueryHandler(
-        CourseWorkDbContext dbContext,
+        CourseWork2Context dbContext,
         IGeocodingService geocodingService,
         IRouteService routeService,
         ILogger<GetNearestDoctorsQueryHandler> logger)

@@ -1,15 +1,14 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using MediatR;
+using MedicApp.Application.Doctor.AssignDoctorToVisit;
 using MedicApp.Domain.Dto.Responce;
 using MedicApp.Infrastructure.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
-namespace MedicApp.Application.Doctor.AssignDoctorToVisit;
+namespace MedicApp.Application.Doctor.Appointment.Command.AssignDoctorToVisit;
 
 public class AssignDoctorToVisitCommandHandler(
-    CourseWorkDbContext dbContext,
-    Logger<AssignDoctorToVisitCommandHandler> logger)
+    CourseWork2Context dbContext)
     : IRequestHandler<AssignDoctorToVisitCommand, AssignmentResult>
 {
     public async Task<AssignmentResult> Handle(AssignDoctorToVisitCommand request, CancellationToken cancellationToken)
@@ -29,7 +28,6 @@ public class AssignDoctorToVisitCommandHandler(
         
         if (doctor == null || doctor.Role.Name != role?.Name)
         {
-            logger.LogWarning("Invalid doctor ID {DoctorId} or user is not a doctor", request.DoctorId);
             throw new ValidationException("Invalid doctor ID or user is not a doctor"); 
             
         }

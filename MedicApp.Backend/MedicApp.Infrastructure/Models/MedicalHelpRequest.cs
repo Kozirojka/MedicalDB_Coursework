@@ -19,6 +19,10 @@ public partial class MedicalHelpRequest
 
     public int? ScheduleIntervalId { get; set; }
 
+    public DateTime? HelpRequestStart { get; set; }
+
+    public DateTime? HelpRequestEnd { get; set; }
+
     public virtual Doctor? Doctor { get; set; }
 
     public virtual Patient Patient { get; set; } = null!;

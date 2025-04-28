@@ -20,6 +20,7 @@ public class GenerateAccessTokenCommandHandler : IRequestHandler<GenerateAccessT
     {
         var claims = new List<Claim>
         {
+            new (ClaimTypes.NameIdentifier, request.User.Id.ToString()),
             new Claim(ClaimTypes.Email, request.User.Email),
             new Claim(ClaimTypes.Role, request.Role),
             new Claim("FirstName", request.User.Firstname),

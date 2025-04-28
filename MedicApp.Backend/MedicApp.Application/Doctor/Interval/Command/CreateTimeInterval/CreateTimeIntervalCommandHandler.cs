@@ -7,15 +7,9 @@ namespace MedicApp.Application.Doctor.Interval.Command.CreateTimeInterval
 {
     public record CreateTimeIntervalCommand(int ScheduleId, int DoctorId, IntervalDto? IntervalDto) : IRequest<bool>;
 
-    public class CreateTimeIntervalCommandHandler : IRequestHandler<CreateTimeIntervalCommand, bool>
+    public class CreateTimeIntervalCommandHandler(CourseWork2Context dbContext)
+        : IRequestHandler<CreateTimeIntervalCommand, bool>
     {
-        private readonly CourseWorkDbContext _dbContext;
-
-        public CreateTimeIntervalCommandHandler(CourseWorkDbContext dbContext)
-        {
-            _dbContext = dbContext;
-        }
-
         public async Task<bool> Handle(CreateTimeIntervalCommand request, CancellationToken cancellationToken)
         {
             if (request.IntervalDto == null)
@@ -23,7 +17,7 @@ namespace MedicApp.Application.Doctor.Interval.Command.CreateTimeInterval
                 return false;
             }
 
-            var schedule = await _dbContext.Schedules
+            var schedule = await dbContext.Schedules
                 .FirstOrDefaultAsync(s => s.Id == request.ScheduleId && s.DoctorId == request.DoctorId, cancellationToken);
 
             if (schedule == null)
@@ -31,7 +25,7 @@ namespace MedicApp.Application.Doctor.Interval.Command.CreateTimeInterval
                 return false; 
             }
 
-            var isIntersecting = await _dbContext.ScheduleIntervals
+            var isIntersecting = await dbContext.ScheduleIntervals
                 .AnyAsync(u =>
                     u.ScheduleId == request.ScheduleId &&
                     (
@@ -55,7 +49,7 @@ namespace MedicApp.Application.Doctor.Interval.Command.CreateTimeInterval
 
             if (request.IntervalDto.MedicHelp != null)
             {
-                var helpRequest = await _dbContext.MedicalHelpRequests
+                var helpRequest = await dbContext.MedicalHelpRequests
                     .FindAsync(request.IntervalDto.MedicHelp, cancellationToken);
 
                 if (helpRequest != null)
@@ -64,8 +58,8 @@ namespace MedicApp.Application.Doctor.Interval.Command.CreateTimeInterval
                 }
             }
 
-            _dbContext.ScheduleIntervals.Add(newInterval);
-            await _dbContext.SaveChangesAsync(cancellationToken);
+            dbContext.ScheduleIntervals.Add(newInterval);
+            await dbContext.SaveChangesAsync(cancellationToken);
 
             return true; 
         }

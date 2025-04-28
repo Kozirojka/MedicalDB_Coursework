@@ -6,18 +6,12 @@ namespace MedicApp.Application.Doctor.Interval.Command.CreateScheduleDay;
 
 public record CreateScheduleDayCommand(int DoctorId, DateOnly Date) : IRequest<bool>;
 
-public class CreateScheduleDayCommandHandler : IRequestHandler<CreateScheduleDayCommand, bool>
+public class CreateScheduleDayCommandHandler(CourseWork2Context context)
+    : IRequestHandler<CreateScheduleDayCommand, bool>
 {
-    private readonly CourseWorkDbContext _context;
-
-    public CreateScheduleDayCommandHandler(CourseWorkDbContext context)
-    {
-        _context = context;
-    }
-
     public async Task<bool> Handle(CreateScheduleDayCommand request, CancellationToken cancellationToken)
     {
-        var doctorExists = await _context.Accounts
+        var doctorExists = await context.Accounts
             .AnyAsync(d => d.Id == request.DoctorId, cancellationToken);
 
         if (!doctorExists)
@@ -25,7 +19,7 @@ public class CreateScheduleDayCommandHandler : IRequestHandler<CreateScheduleDay
             return false;
         }
 
-        var existingSchedule = await _context.Schedules
+        var existingSchedule = await context.Schedules
             .SingleOrDefaultAsync(
                 s => s.DoctorId == request.DoctorId && s.Date == request.Date,
                 cancellationToken
@@ -43,8 +37,8 @@ public class CreateScheduleDayCommandHandler : IRequestHandler<CreateScheduleDay
             CreatedAt = DateTime.UtcNow 
         };
 
-        _context.Schedules.Add(newSchedule);
-        await _context.SaveChangesAsync(cancellationToken);
+        context.Schedules.Add(newSchedule);
+        await context.SaveChangesAsync(cancellationToken);
 
         return true;
     }

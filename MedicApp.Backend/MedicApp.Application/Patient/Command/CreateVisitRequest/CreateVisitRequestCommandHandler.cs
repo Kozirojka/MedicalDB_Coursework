@@ -7,10 +7,10 @@ namespace MedicApp.Application.Patient.Command.CreateVisitRequest;
 
 public class CreateVisitRequestCommandHandler : IRequestHandler<CreateVisitRequestCommand, CreateVisitRequestResponse>
 {
-    private readonly CourseWorkDbContext _context;
+    private readonly CourseWork2Context _context;
 
     public CreateVisitRequestCommandHandler(
-        CourseWorkDbContext context)
+        CourseWork2Context context)
     {
         _context = context;
     }
@@ -19,7 +19,7 @@ public class CreateVisitRequestCommandHandler : IRequestHandler<CreateVisitReque
         CreateVisitRequestCommand request, 
         CancellationToken cancellationToken)
     {
-        var patient = await _context.Patients.SingleOrDefaultAsync(p => p.Id == request.PatientId, cancellationToken: cancellationToken);
+        var patient = await _context.Patients.SingleOrDefaultAsync(p => p.Account != null && p.Account.Id == request.PatientId, cancellationToken: cancellationToken);
         if (patient == null)
         {
             throw new ApplicationException("Patient not found");
@@ -30,7 +30,8 @@ public class CreateVisitRequestCommandHandler : IRequestHandler<CreateVisitReque
         {
             CreateAt = DateTime.Now,
             Description = request.Description, 
-            StatusId = status.Id
+            StatusId = status.Id,
+            PatientId = patient.Id,
         };
         
         await _context.MedicalHelpRequests.AddAsync(help_request, cancellationToken);
