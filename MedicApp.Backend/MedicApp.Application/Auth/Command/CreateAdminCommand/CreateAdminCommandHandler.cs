@@ -7,21 +7,12 @@ using MedicApp.Infrastructure.Data;
 using MedicApp.Infrastructure.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace MedicApp.Application.Auth.Command.CreateDoctor;
+namespace MedicApp.Application.Auth.Command.CreateAdminCommand;
 
-public class CreateDoctorCommandHandler : IRequestHandler<CreateDoctorCommand, AuthResult>
+public class CreateAdminCommandHandler(
+    IMediator mediator,
+    CourseWork2Context context) : IRequestHandler<CreateDoctorCommand, AuthResult>
 {
-    private readonly IMediator _mediator;
-    private readonly CourseWork2Context _context;
-
-    public CreateDoctorCommandHandler(IMediator mediator,
-        CourseWork2Context context)
-    {
-        _mediator = mediator;
-        _context = context;
-    }
-
-
     public async Task<AuthResult> Handle(CreateDoctorCommand request, CancellationToken cancellationToken)
     {
         if (request == null || request.DriverRequest == null)
@@ -46,7 +37,7 @@ public class CreateDoctorCommandHandler : IRequestHandler<CreateDoctorCommand, A
             };
         }
 
-        if (await _context.Accounts.SingleOrDefaultAsync(a => a.Email == request.DriverRequest.Email) != null)
+        if (await context.Accounts.SingleOrDefaultAsync(a => a.Email == request.DriverRequest.Email, cancellationToken: cancellationToken) != null)
         {
             return new AuthResult
             {
@@ -66,7 +57,7 @@ public class CreateDoctorCommandHandler : IRequestHandler<CreateDoctorCommand, A
         };
 
 
-        var role = await _context.Roles.SingleOrDefaultAsync(u => u.Name == "Doctor",
+        var role = await context.Roles.SingleOrDefaultAsync(u => u.Name == "Admin",
             cancellationToken: cancellationToken);
         var user = new Account()
         {
@@ -79,9 +70,9 @@ public class CreateDoctorCommandHandler : IRequestHandler<CreateDoctorCommand, A
         };
 
 
-        await _context.Accounts.AddAsync(user, cancellationToken);
+        await context.Accounts.AddAsync(user, cancellationToken);
 
-        var result = await _context.SaveChangesAsync(cancellationToken) > 0;
+        var result = await context.SaveChangesAsync(cancellationToken) > 0;
         if (!result)
         {
             return new AuthResult
@@ -94,7 +85,7 @@ public class CreateDoctorCommandHandler : IRequestHandler<CreateDoctorCommand, A
         string token;
         try
         {
-            token = await _mediator.Send(new GenerateAccessTokenCommand
+            token = await mediator.Send(new GenerateAccessTokenCommand
             {
                 User = user,
                 Role = "Doctor"
@@ -109,22 +100,14 @@ public class CreateDoctorCommandHandler : IRequestHandler<CreateDoctorCommand, A
             };
         }
         
-        int[] selectedSpecializationIds = new int[] { 1, 2 };
-        
-        var specializations = await _context.Specializations
-            .Where(s => selectedSpecializationIds.Contains(s.Id))
-            .ToListAsync(cancellationToken: cancellationToken);
-        
-        
-        var doctorProfile = new Infrastructure.Models.Doctor()
+        var doctorProfile = new Infrastructure.Models.Admin()
         {
-            AccountId = user.Id,
-            Specializations = specializations,
+            Accountid = user.Id,
         };
 
 
-        _context.Doctors.Add(doctorProfile);
-        await _context.SaveChangesAsync(cancellationToken);
+        context.Admins.Add(doctorProfile);
+        await context.SaveChangesAsync(cancellationToken);
 
 
         return new AuthResult
@@ -135,7 +118,7 @@ public class CreateDoctorCommandHandler : IRequestHandler<CreateDoctorCommand, A
                 UserId = user.Id,
                 Email = user.Email,
                 Token = token,
-                Role = "Doctor",
+                Role = "Admin",
                 FirstName = user.Firstname,
                 LastName = user.Lastname,
             }

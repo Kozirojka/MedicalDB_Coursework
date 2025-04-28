@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using MedicApp.Domain.Dto;
 using MedicApp.Domain.Dto.Responce;
+using MedicApp.Infrastructure.Data;
 using MedicApp.Infrastructure.Models;
 using MedicApp.Infrastructure.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;

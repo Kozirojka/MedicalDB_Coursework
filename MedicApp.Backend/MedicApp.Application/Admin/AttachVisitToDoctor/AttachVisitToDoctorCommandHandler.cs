@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using MedicApp.Infrastructure.Data;
 using MedicApp.Infrastructure.Models;
 using Microsoft.EntityFrameworkCore;
 

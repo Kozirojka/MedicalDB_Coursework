@@ -1,31 +1,25 @@
 ﻿using MediatR;
+using MedicApp.Infrastructure.Data;
 using MedicApp.Infrastructure.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace MedicApp.Application.Patient.Command.CreateVisitRequest;
 
-public class CreateVisitRequestCommandHandler : IRequestHandler<CreateVisitRequestCommand, CreateVisitRequestResponse>
+public class CreateVisitRequestCommandHandler(CourseWork2Context context)
+    : IRequestHandler<CreateVisitRequestCommand, CreateVisitRequestResponse>
 {
-    private readonly CourseWork2Context _context;
-
-    public CreateVisitRequestCommandHandler(
-        CourseWork2Context context)
-    {
-        _context = context;
-    }
-
     public async Task<CreateVisitRequestResponse> Handle(
         CreateVisitRequestCommand request, 
         CancellationToken cancellationToken)
     {
-        var patient = await _context.Patients.SingleOrDefaultAsync(p => p.Account != null && p.Account.Id == request.PatientId, cancellationToken: cancellationToken);
+        var patient = await context.Patients.SingleOrDefaultAsync(p => p.Account != null && p.Account.Id == request.PatientId, cancellationToken: cancellationToken);
         if (patient == null)
         {
             throw new ApplicationException("Patient not found");
         }
 
-        var status = await _context.HelpRequestStatuses.SingleOrDefaultAsync(u => u.Name == "LookingForAssign", cancellationToken: cancellationToken);
+        var status = await context.HelpRequestStatuses.SingleOrDefaultAsync(u => u.Name == "LookingForAssign", cancellationToken: cancellationToken);
         var help_request = new MedicalHelpRequest()
         {
             CreateAt = DateTime.Now,
@@ -34,8 +28,8 @@ public class CreateVisitRequestCommandHandler : IRequestHandler<CreateVisitReque
             PatientId = patient.Id,
         };
         
-        await _context.MedicalHelpRequests.AddAsync(help_request, cancellationToken);
-        var result = await _context.SaveChangesAsync(cancellationToken) > 0;
+        await context.MedicalHelpRequests.AddAsync(help_request, cancellationToken);
+        var result = await context.SaveChangesAsync(cancellationToken) > 0;
         
         if (result)
         {

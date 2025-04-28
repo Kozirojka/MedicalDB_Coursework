@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using MedicApp.Application.Doctor.GetPendingVisitRequests;
 using MedicApp.Domain.Dto.Responce;
+using MedicApp.Infrastructure.Data;
 using MedicApp.Infrastructure.Extension;
 using MedicApp.Infrastructure.Models;
 using Microsoft.EntityFrameworkCore;

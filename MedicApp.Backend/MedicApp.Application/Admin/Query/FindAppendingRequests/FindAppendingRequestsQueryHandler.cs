@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using MedicalVisits.Application.Admin.Queries.FindAppendingRequests;
+using MedicApp.Infrastructure.Data;
 using MedicApp.Infrastructure.Models;
 using Microsoft.EntityFrameworkCore;
 

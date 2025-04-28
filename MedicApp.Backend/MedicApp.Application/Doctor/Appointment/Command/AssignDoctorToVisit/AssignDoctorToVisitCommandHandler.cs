@@ -2,6 +2,7 @@
 using MediatR;
 using MedicApp.Application.Doctor.AssignDoctorToVisit;
 using MedicApp.Domain.Dto.Responce;
+using MedicApp.Infrastructure.Data;
 using MedicApp.Infrastructure.Models;
 using Microsoft.EntityFrameworkCore;
 

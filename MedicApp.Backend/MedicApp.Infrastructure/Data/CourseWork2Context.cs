@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using MedicApp.Infrastructure.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace MedicApp.Infrastructure.Models;
+namespace MedicApp.Infrastructure.Data;
 
 public partial class CourseWork2Context : DbContext
 {
@@ -18,6 +19,8 @@ public partial class CourseWork2Context : DbContext
     public virtual DbSet<Account> Accounts { get; set; }
 
     public virtual DbSet<Address> Addresses { get; set; }
+
+    public virtual DbSet<Admin> Admins { get; set; }
 
     public virtual DbSet<Doctor> Doctors { get; set; }
 
@@ -108,6 +111,21 @@ public partial class CourseWork2Context : DbContext
                 .HasForeignKey(d => d.AccountId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_account");
+        });
+
+        modelBuilder.Entity<Admin>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("admin_pkey");
+
+            entity.ToTable("admin");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Accountid).HasColumnName("accountid");
+
+            entity.HasOne(d => d.Account).WithMany(p => p.Admins)
+                .HasForeignKey(d => d.Accountid)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_admin_account");
         });
 
         modelBuilder.Entity<Doctor>(entity =>

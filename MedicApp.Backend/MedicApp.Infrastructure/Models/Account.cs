@@ -23,6 +23,8 @@ public partial class Account
 
     public virtual ICollection<Address> Addresses { get; set; } = new List<Address>();
 
+    public virtual ICollection<Admin> Admins { get; set; } = new List<Admin>();
+
     public virtual Doctor? Doctor { get; set; }
 
     public virtual Patient? Patient { get; set; }
