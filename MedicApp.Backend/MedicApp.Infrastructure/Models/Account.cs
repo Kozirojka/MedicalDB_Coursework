@@ -19,7 +19,11 @@ public partial class Account
 
     public int RoleId { get; set; }
 
+    public string? PasswordHash { get; set; }
+
     public virtual ICollection<Address> Addresses { get; set; } = new List<Address>();
+
+    public virtual ICollection<Admin> Admins { get; set; } = new List<Admin>();
 
     public virtual Doctor? Doctor { get; set; }
 

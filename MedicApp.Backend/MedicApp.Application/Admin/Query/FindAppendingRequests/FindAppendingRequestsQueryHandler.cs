@@ -1,5 +1,7 @@
 ﻿using MediatR;
-using MedicalVisits.Application.Admin.Queries.FindAppendingRequests;
+using MedicApp.Domain.Dto;
+using MedicApp.Infrastructure.Data;
+using MedicApp.Infrastructure.Extension;
 using MedicApp.Infrastructure.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,10 +10,10 @@ namespace MedicApp.Application.Admin.Query.FindAppendingRequests;
 public class FindAppendingRequestsQueryHandler : IRequestHandler<FindAppendingRequestsQuery, List<VisitResponceDto>>
 {
     
-    private readonly CourseWorkDbContext _dbContext;
+    private readonly CourseWork2Context _dbContext;
 
     public FindAppendingRequestsQueryHandler(
-        CourseWorkDbContext dbContext)
+        CourseWork2Context dbContext)
     {
         _dbContext = dbContext;
     }
@@ -29,14 +31,15 @@ public class FindAppendingRequestsQueryHandler : IRequestHandler<FindAppendingRe
 
         var listOfRequests = await _dbContext.MedicalHelpRequests
             .Where(p => p.Status.Name == "LookingForAssign")
-            .Include(v => v.Patient) // Завантажуємо навігаційну властивість Patient
-            .ThenInclude(p => p.Account.Addresses) // Завантажуємо Address з ApplicationUser
+            .Include(v => v.Patient) 
+            .ThenInclude(p => p.Account.Addresses) 
             .AsNoTracking()
             .Select(v => new VisitResponceDto
             {
                 Id = v.Id,
                 Description = v.Description,
-                PatienId = v.PatientId
+                PatienId = v.PatientId,
+                Address = v.Patient.Account.Addresses.FirstOrDefault().ToDto(),
             })
             .ToListAsync(cancellationToken);
 
@@ -51,7 +54,7 @@ public class VisitResponceDto
     public int Id { get; set; }
     public string Description { get; set; }
     
-    public Address Address { get; set; }
+    public AddressDto Address { get; set; }
     public int PatienId { get; set; }
 }
 

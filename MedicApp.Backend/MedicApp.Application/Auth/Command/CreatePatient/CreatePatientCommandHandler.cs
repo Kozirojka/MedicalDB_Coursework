@@ -1,7 +1,9 @@
 ﻿using MediatR;
 using MedicApp.Domain.Dto;
 using MedicApp.Domain.Dto.Responce;
+using MedicApp.Infrastructure.Data;
 using MedicApp.Infrastructure.Models;
+using MedicApp.Infrastructure.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace MedicApp.Application.LogReg.Command.CreatePatient;
@@ -9,13 +11,14 @@ namespace MedicApp.Application.LogReg.Command.CreatePatient;
 public class CreatePatientCommandHandler : IRequestHandler<CreatePatientCommand, AuthResult>
 {
     private readonly IMediator _mediator;
-    private readonly CourseWorkDbContext _context;
-
+    private readonly CourseWork2Context _context;
+    private readonly IPasswordService _passwordService;
     public CreatePatientCommandHandler(IMediator mediator,
-        CourseWorkDbContext context)
+        CourseWork2Context context, IPasswordService passwordService)
     {
         _mediator = mediator;
         _context = context;
+        _passwordService = passwordService;
     }
 
 
@@ -71,7 +74,8 @@ public class CreatePatientCommandHandler : IRequestHandler<CreatePatientCommand,
             Lastname = request.DriverRequest.Lastname,
             Phonenumber = request.DriverRequest.Phonenumber,
             RoleId = role.Id,
-            Addresses = new List<Address> { address }
+            Addresses = new List<Address> { address },
+            PasswordHash = _passwordService.HashPassword(request.DriverRequest.Password),
         };
         
         

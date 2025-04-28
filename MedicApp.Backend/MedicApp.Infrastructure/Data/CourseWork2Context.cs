@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using MedicApp.Infrastructure.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace MedicApp.Infrastructure.Models;
+namespace MedicApp.Infrastructure.Data;
 
-public partial class CourseWorkDbContext : DbContext
+public partial class CourseWork2Context : DbContext
 {
-    public CourseWorkDbContext()
+    public CourseWork2Context()
     {
     }
 
-    public CourseWorkDbContext(DbContextOptions<CourseWorkDbContext> options)
+    public CourseWork2Context(DbContextOptions<CourseWork2Context> options)
         : base(options)
     {
     }
@@ -18,6 +19,8 @@ public partial class CourseWorkDbContext : DbContext
     public virtual DbSet<Account> Accounts { get; set; }
 
     public virtual DbSet<Address> Addresses { get; set; }
+
+    public virtual DbSet<Admin> Admins { get; set; }
 
     public virtual DbSet<Doctor> Doctors { get; set; }
 
@@ -67,6 +70,7 @@ public partial class CourseWorkDbContext : DbContext
             entity.Property(e => e.Lastname)
                 .HasMaxLength(100)
                 .HasColumnName("lastname");
+            entity.Property(e => e.PasswordHash).HasMaxLength(255);
             entity.Property(e => e.Phonenumber)
                 .HasMaxLength(20)
                 .HasColumnName("phonenumber");
@@ -99,6 +103,9 @@ public partial class CourseWorkDbContext : DbContext
                 .HasColumnName("country");
             entity.Property(e => e.Latitude).HasColumnName("latitude");
             entity.Property(e => e.Longitude).HasColumnName("longitude");
+            entity.Property(e => e.Region)
+                .HasMaxLength(255)
+                .HasColumnName("region");
             entity.Property(e => e.Street)
                 .HasMaxLength(100)
                 .HasColumnName("street");
@@ -107,6 +114,21 @@ public partial class CourseWorkDbContext : DbContext
                 .HasForeignKey(d => d.AccountId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_account");
+        });
+
+        modelBuilder.Entity<Admin>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("admin_pkey");
+
+            entity.ToTable("admin");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Accountid).HasColumnName("accountid");
+
+            entity.HasOne(d => d.Account).WithMany(p => p.Admins)
+                .HasForeignKey(d => d.Accountid)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_admin_account");
         });
 
         modelBuilder.Entity<Doctor>(entity =>
@@ -170,7 +192,14 @@ public partial class CourseWorkDbContext : DbContext
                 .HasColumnName("create_at");
             entity.Property(e => e.Description).HasColumnName("description");
             entity.Property(e => e.DoctorId).HasColumnName("doctor_id");
+            entity.Property(e => e.HelpRequestEnd)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("help_request_end");
+            entity.Property(e => e.HelpRequestStart)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("help_request_start");
             entity.Property(e => e.PatientId).HasColumnName("patient_id");
+            entity.Property(e => e.ScheduleIntervalId).HasColumnName("schedule_interval_id");
             entity.Property(e => e.StatusId).HasColumnName("status_id");
 
             entity.HasOne(d => d.Doctor).WithMany(p => p.MedicalHelpRequests)
@@ -182,6 +211,10 @@ public partial class CourseWorkDbContext : DbContext
                 .HasForeignKey(d => d.PatientId)
                 .OnDelete(DeleteBehavior.SetNull)
                 .HasConstraintName("fk_patient");
+
+            entity.HasOne(d => d.ScheduleInterval).WithMany(p => p.MedicalHelpRequests)
+                .HasForeignKey(d => d.ScheduleIntervalId)
+                .HasConstraintName("fk_schedule");
 
             entity.HasOne(d => d.Status).WithMany(p => p.MedicalHelpRequests)
                 .HasForeignKey(d => d.StatusId)

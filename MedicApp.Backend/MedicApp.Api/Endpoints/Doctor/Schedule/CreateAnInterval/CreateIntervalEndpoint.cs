@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using MediatR;
 using MedicApp.Application.Doctor.Interval.Command.CreateTimeInterval;
 using MedicApp.Domain.Dto.Requests;
@@ -14,9 +15,14 @@ namespace MedicApp.Api.Endpoints.Doctor.Schedule.CreateAnInterval
 
         private async Task<IResult> Handler(HttpContext context, IMediator mediator, int scheduleId, [FromBody] IntervalDto intervals)
         {
-            var doctorId = 1;
+            var userIdClaim = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!int.TryParse(userIdClaim, out var userId))
+            {
+                return Results.Unauthorized();
+            }
             
-            var command = new CreateTimeIntervalCommand(scheduleId, doctorId, intervals);
+            
+            var command = new CreateTimeIntervalCommand(scheduleId, userId, intervals);
             var result = await mediator.Send(command);
 
             if (result is false)

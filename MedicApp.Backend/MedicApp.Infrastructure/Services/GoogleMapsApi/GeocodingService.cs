@@ -21,7 +21,9 @@ public class GeocodingService : IGeocodingService
     
     public async Task<Coordinate> GeocodeAddressAsync(Address address)
     {
-        var url = $"https://maps.googleapis.com/maps/api/geocode/json?address={Uri.EscapeDataString(address.ToString())}&key={_settings.Value.ApiKey}";
+        var addressString = string.Join(", ", address.Street, address.Building, address.City, address.Region, address.Country);
+        
+        var url = $"https://maps.googleapis.com/maps/api/geocode/json?address={Uri.EscapeDataString(addressString)}&key={_settings.Value.ApiKey}";
 
         try
         {

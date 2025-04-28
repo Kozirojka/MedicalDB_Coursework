@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using System.Security.Claims;
+using MediatR;
 using MedicApp.Application.Doctor.AssignDoctorToVisit;
 
 namespace MedicApp.Api.Endpoints.Doctor.Appointment.AssignDoctorToVisit;
@@ -20,7 +21,14 @@ public class AssignDoctorToVisitEndpoint : IEndpoint
 
     private async Task<IResult> Handler(HttpContext context, IMediator mediator, int visitId, int scheduleId)
     {
-        var command = new AssignDoctorToVisitCommand(visitId, 3, scheduleId);
+        
+        var userIdClaim = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!int.TryParse(userIdClaim, out var userId))
+        {
+            return Results.Unauthorized();
+        }
+        
+        var command = new AssignDoctorToVisitCommand(visitId, userId, scheduleId);
         
         var result = await mediator.Send(command);
 

@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using MedicApp.Infrastructure.Data;
 using MedicApp.Infrastructure.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,10 +8,10 @@ namespace MedicApp.Application.Admin.AttachVisitToDoctor;
 public class AttachVisitToDoctorCommandHandler : IRequestHandler<AttachVisitToDoctorCommand, ResultOfAttach>
 {
     private readonly IMediator _mediator;
-    private readonly CourseWorkDbContext _context; 
+    private readonly CourseWork2Context _context; 
 
     public AttachVisitToDoctorCommandHandler(IMediator mediator,
-        CourseWorkDbContext context)
+        CourseWork2Context context)
     {
         _mediator = mediator;
         _context = context;
@@ -37,9 +38,11 @@ public class AttachVisitToDoctorCommandHandler : IRequestHandler<AttachVisitToDo
                 };
             }
 
-            var status = await _context.HelpRequestStatuses.SingleOrDefaultAsync(u => u.Name == "AssignedToDoctor");
+            var status = await _context.HelpRequestStatuses.SingleOrDefaultAsync(u => u.Name == "AssignedToDoctor", cancellationToken: cancellationToken);
+                
+            var doctorFinde = _context.Doctors.SingleOrDefault(u => u.AccountId == request.DoctorId);
             
-            visit.DoctorId = request.DoctorId;
+            visit.DoctorId = doctorFinde.Id;
             visit.StatusId = status.Id;
             
             

@@ -1,7 +1,6 @@
 ﻿using MediatR;
-using MedicApp.Application.Admin.Query.FindAppendingRequests;
 
-namespace MedicalVisits.Application.Admin.Queries.FindAppendingRequests;
+namespace MedicApp.Application.Admin.Query.FindAppendingRequests;
 
 public class FindAppendingRequestsQuery : IRequest<List<VisitResponceDto>>
 {

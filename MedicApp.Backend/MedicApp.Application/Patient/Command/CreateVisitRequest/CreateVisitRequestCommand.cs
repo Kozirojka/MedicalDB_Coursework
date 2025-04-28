@@ -10,7 +10,7 @@ public record CreateVisitRequestCommand : IRequest<CreateVisitRequestResponse>
 
     public CreateVisitRequestCommand(VisitRequestDto dto, int patientId)
     {
-        Description = dto.Description;
+        Description = dto.description;
         PatientId = patientId;
     }
 }
