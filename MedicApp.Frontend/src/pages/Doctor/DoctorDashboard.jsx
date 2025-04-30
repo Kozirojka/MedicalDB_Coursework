@@ -27,6 +27,8 @@ export default function DoctorDashboard() {
         setError(null);
         try {
             const data = await fetchVisitPendingRequests();
+
+            console.log(data); 
             setRequests(data);
         } catch (err) {
             setError('Помилка при отриманні даних');

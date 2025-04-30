@@ -1,17 +1,11 @@
 ﻿using MediatR;
 using MedicApp.Domain.Dto.Responce;
 
-namespace MedicApp.Application.Doctor.GetPendingVisitRequests;
+namespace MedicApp.Application.Doctor.Appointment.Query.GetPendingVisitRequests;
 
-public class GetPendingRequestsForDoctorCommand : IRequest<List<VisitRequestResponce>>
+public class GetPendingRequestsForDoctorCommand(DoctorRequestFilterDto doctor) : IRequest<List<VisitRequestResponce>>
 {
-    public GetPendingRequestsForDoctorCommand(DoctorRequestFilterDto doctor)
-    {
-        Doctor = doctor;
-    }
-    
-    public DoctorRequestFilterDto Doctor { get; set; }
-    
+    public DoctorRequestFilterDto Doctor { get; set; } = doctor;
 }
 
 

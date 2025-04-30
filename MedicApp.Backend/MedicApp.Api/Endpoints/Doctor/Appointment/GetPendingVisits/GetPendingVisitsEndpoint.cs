@@ -11,9 +11,8 @@ public class GetPendingVisitsEndpoint : IEndpoint
         endpoints.MapGet("/api/v2/doctor/visits/pending-visits", Handler);
     }
 
-    private static async Task<IResult> Handler(HttpContext context)
+    private async Task<IResult> Handler(HttpContext context, IMediator mediator)
     {
-        var mediator = context.RequestServices.GetRequiredService<IMediator>();
         
         var userIdClaim = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (!int.TryParse(userIdClaim, out var userId))
@@ -29,7 +28,7 @@ public class GetPendingVisitsEndpoint : IEndpoint
 
         var command = dto.MapToCommand();
         var result = await mediator.Send(command);
-
-        return TypedResults.Ok(result);
+        
+        return Results.Ok(result);
     }
 }
