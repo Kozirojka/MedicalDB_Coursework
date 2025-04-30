@@ -39,7 +39,9 @@ const VisitRequestCard = ({ request, onAssignTime }) => {
       elevation={2} 
       sx={{ 
         mb: 2, 
-        borderRadius: 2, 
+        borderRadius: 2,
+        maxWidth: 400, // Додана максимальна ширина картки
+        width: '100%', // Забезпечує адаптивність для менших екранів
         overflow: 'hidden',
         transition: 'all 0.2s ease',
         '&:hover': {
