@@ -26,22 +26,20 @@ export default function RequestForConfirm({ requests, loading, error }) {
       setLoadingAssign(true);
       const token = localStorage.getItem("accessToken");
       
-      const response = await fetch(
-        `${BASE_API}/Doctor/assign-visit`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            timeSlotId: timeSlotId,
-            VisitRequestId: selectedRequest.id,
-          }),
-        }
-      );
+      console.log("Selected request:", selectedRequest);
+      console.log("Selected time slot ID:", timeSlotId);
+      // const response = await fetch(
+      //   `${BASE_API}/doctor/assign/${selectedRequest.id}/${timeSlotId}`,
+      //   {
+      //     method: "PUT",
+      //     headers: {
+      //       Authorization: `Bearer ${token}`,
+      //       "Content-Type": "application/json",
+      //     },
+      //   }
+      // );
       
-      if (!response.ok) throw new Error("Failed to assign time");
+      // if (!response.ok) throw new Error("Failed to assign time");
       
       handleCloseCalendar();
     } catch (error) {

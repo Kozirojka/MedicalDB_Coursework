@@ -99,7 +99,7 @@ const Calendar = ({ onTimeSelect, onClose }) => {
     setTabValue(newValue);
   };
 
-  // Save new time interval
+  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   const handleSaveInterval = () => {
     if (!selectedDate || !startTime || !endTime) {
       alert('Виберіть дату та час!');
