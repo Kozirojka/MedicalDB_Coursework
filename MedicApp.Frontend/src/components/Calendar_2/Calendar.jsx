@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   Box, 
   Typography, 
@@ -9,13 +9,18 @@ import {
   Tab, 
   TextField, 
   Paper,
-  Divider
+  Divider,
+  CircularProgress,
+  Alert,
+  Snackbar
 } from '@mui/material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
+import EventBusyIcon from '@mui/icons-material/EventBusy';
 import {BASE_API} from '../../constants/BASE_API';
+
 // Українські назви днів тижня та місяців
 const daysOfWeek = ['Нд', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
 const months = [
@@ -29,48 +34,71 @@ const Calendar = ({ onTimeSelect, onClose }) => {
   const [tabValue, setTabValue] = useState(0);
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
   
-  // Mock data for available time slots - replace with actual API data
-  const [availabilityData, setAvailabilityData] = useState({
-    "2025-04-28": [
-      { id: "101", start: "09:00", end: "10:30" },
-      { id: "102", start: "11:00", end: "12:30" },
-      { id: "103", start: "14:00", end: "15:30" }
-    ],
-    "2025-04-29": [
-      { id: "104", start: "10:00", end: "11:30" },
-      { id: "105", start: "13:00", end: "14:30" }
-    ],
-    "2025-04-30": [
-      { id: "106", start: "09:30", end: "11:00" },
-      { id: "107", start: "12:00", end: "13:30" },
-      { id: "108", start: "15:00", end: "16:30" }
-    ],
-    "2025-05-01": [
-      { id: "109", start: "09:00", end: "10:00" },
-      { id: "110", start: "11:00", end: "12:00" },
-      { id: "111", start: "13:00", end: "14:00" },
-      { id: "112", start: "15:00", end: "16:00" }
-    ],
-    "2025-05-02": [
-      { id: "113", start: "10:00", end: "12:00" },
-      { id: "114", start: "14:00", end: "16:00" }
-    ],
-    "2025-05-05": [
-      { id: "115", start: "09:00", end: "10:30" },
-      { id: "116", start: "11:30", end: "13:00" }
-    ],
-    "2025-05-06": [
-      { id: "117", start: "14:00", end: "16:30" }
-    ]
-  });
-
-  // Format date as YYYY-MM-DD
+  // Структурований формат даних для роботи з календарем
+  const [availabilityData, setAvailabilityData] = useState({});
+  
+  // Форматування дати як YYYY-MM-DD
   const formatDateString = (year, month, day) => {
     return `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
   };
 
-  // Handle previous month button
+  // Отримання даних з API
+  const fetchScheduleData = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const token = localStorage.getItem('accessToken');
+      const response = await fetch(`${BASE_API}/schedule/intervas`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error('Помилка отримання розкладу');
+      }
+      
+      const data = await response.json();
+      processScheduleData(data);
+    } catch (err) {
+      console.error('Помилка при отриманні даних розкладу:', err);
+      setError('Не вдалося завантажити розклад. Будь ласка, спробуйте пізніше.');
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  // Обробка даних розкладу у формат для календаря
+  const processScheduleData = (scheduleData) => {
+    const formattedData = {};
+    
+    scheduleData.forEach(schedule => {
+      const { date, intervals } = schedule;
+      
+      // Ініціалізація масиву для конкретної дати
+      formattedData[date] = intervals.map(interval => ({
+        id: interval.id,
+        start: interval.startTime.substring(0, 5), // Обрізаємо до формату HH:MM
+        end: interval.endTime.substring(0, 5),     // Обрізаємо до формату HH:MM
+        isBooked: interval.isBooked
+      }));
+    });
+    
+    setAvailabilityData(formattedData);
+  };
+  
+  // Завантаження даних при першому відкритті та зміні місяця
+  useEffect(() => {
+    fetchScheduleData();
+  }, [currentDate.getMonth(), currentDate.getFullYear()]);
+  
+  // Обробник для попереднього місяця
   const handlePrevMonth = () => {
     setCurrentDate(prev => {
       const newDate = new Date(prev);
@@ -79,7 +107,7 @@ const Calendar = ({ onTimeSelect, onClose }) => {
     });
   };
 
-  // Handle next month button
+  // Обробник для наступного місяця
   const handleNextMonth = () => {
     setCurrentDate(prev => {
       const newDate = new Date(prev);
@@ -88,26 +116,26 @@ const Calendar = ({ onTimeSelect, onClose }) => {
     });
   };
 
-  // Handle date selection
+  // Обробник вибору дати
   const handleDateSelect = (date) => {
     setSelectedDate(date);
-    setTabValue(0); // Switch to view tab when selecting date
+    setTabValue(0); // Перемикання на вкладку перегляду при виборі дати
   };
 
-  // Handle tab change
+  // Обробник зміни вкладки
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
   };
 
-  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // Збереження нового інтервалу
   const handleSaveInterval = async () => {
     if (!selectedDate || !startTime || !endTime) {
-      alert('Виберіть дату та час!');
+      setError('Виберіть дату та час!');
       return;
     }
   
     if (startTime >= endTime) {
-      alert('Час початку повинен бути раніше часу закінчення!');
+      setError('Час початку повинен бути раніше часу закінчення!');
       return;
     }
   
@@ -115,47 +143,14 @@ const Calendar = ({ onTimeSelect, onClose }) => {
     const month = selectedDate.getMonth();
     const day = selectedDate.getDate();
     const dateString = formatDateString(year, month, day);
-  
-    console.log(dateString); // 2025-05-07 
-  
-    // Generate a mock ID - in a real app, this would come from the backend
-    const newId = `${Date.now()}`;
-  
-    // Add new interval locally
-    setAvailabilityData(prev => {
-      const newData = { ...prev };
-      if (!newData[dateString]) {
-        newData[dateString] = [];
-      }
-  
-      newData[dateString] = [
-        ...newData[dateString],
-        { id: newId, start: startTime, end: endTime }
-      ].sort((a, b) => a.start.localeCompare(b.start));
-  
-      return newData;
-    });
-  
-    const startDateTime = new Date(
-      year, month, day,
-      Number(startTime.split(':')[0]),
-      Number(startTime.split(':')[1])
-    ).toISOString();
-  
-    console.log(startDateTime); // 2025-05-07T09:00:00.000Z
-    const endDateTime = new Date(
-      year, month, day,
-      Number(endTime.split(':')[0]),
-      Number(endTime.split(':')[1])
-    ).toISOString();
-  
     const localDateStartTime = `${dateString}T${startTime}:00`;
     const localDateEndTime = `${dateString}T${endTime}:00`;
 
-    console.log(endDateTime); // 2025-05-07T10:30:00.000Z
+    setLoading(true);
+    setError(null);
+    
     try {
-
-      let token = localStorage.getItem('accessToken');
+      const token = localStorage.getItem('accessToken');
       const response = await fetch(`${BASE_API}/doctor/schedule/interval`, {
         method: 'POST',
         headers: {
@@ -164,9 +159,7 @@ const Calendar = ({ onTimeSelect, onClose }) => {
         },
         body: JSON.stringify({
           startTime: localDateStartTime,
-          endTime: localDateEndTime,
-          // ⚠️ Якщо medicHelp не потрібен, можна його взагалі не передавати
-          // medicHelp: 0
+          endTime: localDateEndTime
         })
       });
   
@@ -176,50 +169,71 @@ const Calendar = ({ onTimeSelect, onClose }) => {
   
       const result = await response.json();
       console.log('Інтервал збережено на сервері:', result);
-  
+      
+      // Оновлення даних після успішного додавання
+      await fetchScheduleData();
+      
+      // Скидання форми
+      setStartTime('');
+      setEndTime('');
+      setTabValue(0); // Повернення до вкладки перегляду
+      setSuccess('Інтервал успішно додано');
+      
     } catch (error) {
       console.error('❌ POST запит не вдався:', error);
-      alert('Не вдалося зберегти інтервал. Спробуйте ще раз.');
+      setError('Не вдалося зберегти інтервал. Спробуйте ще раз.');
+    } finally {
+      setLoading(false);
     }
-  
-    // Reset form
-    setStartTime('');
-    setEndTime('');
-    setTabValue(0); // Switch back to view tab
   };
   
-
-  // Delete time interval
-  const handleDeleteInterval = (dateString, index) => {
-    setAvailabilityData(prev => {
-      const newData = { ...prev };
-      newData[dateString].splice(index, 1);
-      
-      if (newData[dateString].length === 0) {
-        delete newData[dateString];
+  // Видалення інтервалу
+  const handleDeleteInterval = async (intervalId) => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const token = localStorage.getItem('accessToken');
+      const response = await fetch(`${BASE_API}/doctor/schedule/interval/${intervalId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+  
+      if (!response.ok) {
+        throw new Error('Помилка при видаленні інтервалу!');
       }
       
-      return newData;
-    });
+      // Оновлення даних після успішного видалення
+      await fetchScheduleData();
+      setSuccess('Інтервал успішно видалено');
+      
+    } catch (error) {
+      console.error('❌ DELETE запит не вдався:', error);
+      setError('Не вдалося видалити інтервал. Спробуйте ще раз.');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // Generate calendar grid
+  // Створення сітки календаря
   const renderCalendarGrid = () => {
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
     
-    // First day of month
+    // Перший день місяця
     const firstDay = new Date(year, month, 1);
     const startDayOfWeek = firstDay.getDay();
     
-    // Last day of month
+    // Останній день місяця
     const lastDay = new Date(year, month + 1, 0);
     const totalDays = lastDay.getDate();
     
-    // Calendar days array
+    // Масив днів календаря
     const calendarDays = [];
     
-    // Add day headers
+    // Додавання заголовків днів тижня
     daysOfWeek.forEach(day => {
       calendarDays.push(
         <Grid item xs={12/7} key={`header-${day}`}>
@@ -238,7 +252,7 @@ const Calendar = ({ onTimeSelect, onClose }) => {
       );
     });
     
-    // Add empty cells before first day
+    // Додавання порожніх клітинок перед першим днем
     for (let i = 0; i < startDayOfWeek; i++) {
       calendarDays.push(
         <Grid item xs={12/7} key={`empty-${i}`}>
@@ -247,13 +261,14 @@ const Calendar = ({ onTimeSelect, onClose }) => {
       );
     }
     
-    // Add month days
+    // Додавання днів місяця
     for (let day = 1; day <= totalDays; day++) {
       const date = new Date(year, month, day);
       const dateString = formatDateString(year, month, day);
       const hasSlots = !!availabilityData[dateString];
+      const hasBookedSlots = hasSlots && availabilityData[dateString].some(slot => slot.isBooked);
       
-      // Check if this date is selected
+      // Перевірка, чи вибрано цю дату
       const isSelected = selectedDate && 
         selectedDate.getDate() === day && 
         selectedDate.getMonth() === month && 
@@ -275,21 +290,24 @@ const Calendar = ({ onTimeSelect, onClose }) => {
               color: isSelected ? 'primary.contrastText' : 'inherit',
               '&:hover': {
                 bgcolor: isSelected ? 'primary.main' : 'action.hover'
-              },
-              '&::after': hasSlots ? {
-                content: '""',
-                position: 'absolute',
-                bottom: '4px',
-                left: '50%',
-                transform: 'translateX(-50%)',
-                width: '4px',
-                height: '4px',
-                bgcolor: isSelected ? 'primary.contrastText' : 'primary.main',
-                borderRadius: '50%'
-              } : {}
+              }
             }}
           >
             {day}
+            {hasSlots && (
+              <Box
+                sx={{
+                  position: 'absolute',
+                  bottom: '4px',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  width: '4px',
+                  height: '4px',
+                  bgcolor: isSelected ? 'primary.contrastText' : hasBookedSlots ? 'error.main' : 'primary.main',
+                  borderRadius: '50%'
+                }}
+              />
+            )}
           </Box>
         </Grid>
       );
@@ -298,7 +316,7 @@ const Calendar = ({ onTimeSelect, onClose }) => {
     return calendarDays;
   };
 
-  // Component for displaying time slots
+  // Компонент для відображення часових інтервалів
   const TimeSlots = () => {
     if (!selectedDate) {
       return (
@@ -326,9 +344,9 @@ const Calendar = ({ onTimeSelect, onClose }) => {
     
     return (
       <Box sx={{ mt: 2 }}>
-        {timeSlots.map((slot, index) => (
+        {timeSlots.map((slot) => (
           <Paper
-            key={slot.id || index}
+            key={slot.id}
             elevation={1}
             sx={{
               p: 2,
@@ -336,30 +354,46 @@ const Calendar = ({ onTimeSelect, onClose }) => {
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
-              cursor: 'pointer',
+              cursor: slot.isBooked ? 'default' : 'pointer',
+              bgcolor: slot.isBooked ? 'rgba(211, 47, 47, 0.05)' : 'inherit',
+              borderLeft: slot.isBooked ? '4px solid #d32f2f' : 'none',
               '&:hover': {
-                boxShadow: 3,
-                transform: 'translateY(-2px)',
+                boxShadow: slot.isBooked ? 1 : 3,
+                transform: slot.isBooked ? 'none' : 'translateY(-2px)',
               },
               transition: 'all 0.2s ease'
             }}
-            onClick={() => onTimeSelect && onTimeSelect(slot.id)}
+            onClick={() => {
+              if (!slot.isBooked && onTimeSelect) {
+                onTimeSelect(slot.id);
+              }
+            }}
           >
-            <Typography>{slot.start} - {slot.end}</Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              {slot.isBooked && (
+                <EventBusyIcon sx={{ color: 'error.main', mr: 1, fontSize: '1rem' }} />
+              )}
+              <Typography sx={{ 
+                color: slot.isBooked ? 'text.secondary' : 'text.primary',
+                fontWeight: slot.isBooked ? 400 : 500
+              }}>
+                {slot.start} - {slot.end}
+                {slot.isBooked && ' (Зайнято)'}
+              </Typography>
+            </Box>
+            
             <IconButton
               size="small"
               onClick={(e) => {
                 e.stopPropagation();
-                handleDeleteInterval(dateString, index);
+                handleDeleteInterval(slot.id);
               }}
+              disabled={slot.isBooked}
               sx={{
-                opacity: 0,
+                opacity: slot.isBooked ? 0 : 0.3,
                 '&:hover': {
-                  opacity: 1,
+                  opacity: slot.isBooked ? 0 : 1,
                   color: 'error.main'
-                },
-                ':hover': {
-                  opacity: 1
                 }
               }}
             >
@@ -371,7 +405,7 @@ const Calendar = ({ onTimeSelect, onClose }) => {
     );
   };
 
-  // Form for adding new time slots
+  // Форма для додавання нових часових інтервалів
   const AddIntervalForm = () => {
     if (!selectedDate) {
       return (
@@ -393,6 +427,7 @@ const Calendar = ({ onTimeSelect, onClose }) => {
             value={startTime}
             onChange={(e) => setStartTime(e.target.value)}
             size="small"
+            disabled={loading}
           />
         </Box>
         
@@ -406,6 +441,7 @@ const Calendar = ({ onTimeSelect, onClose }) => {
             value={endTime}
             onChange={(e) => setEndTime(e.target.value)}
             size="small"
+            disabled={loading}
           />
         </Box>
         
@@ -413,21 +449,24 @@ const Calendar = ({ onTimeSelect, onClose }) => {
           <Button 
             variant="outlined" 
             onClick={() => setTabValue(0)}
+            disabled={loading}
           >
             Скасувати
           </Button>
           <Button 
             variant="contained" 
             onClick={handleSaveInterval}
+            disabled={loading}
+            startIcon={loading ? <CircularProgress size={16} color="inherit" /> : null}
           >
-            Зберегти
+            {loading ? 'Збереження...' : 'Зберегти'}
           </Button>
         </Box>
       </Box>
     );
   };
 
-  // Format date for display
+  // Форматування дати для відображення
   const getFormattedSelectedDate = () => {
     if (!selectedDate) return null;
     
@@ -438,20 +477,26 @@ const Calendar = ({ onTimeSelect, onClose }) => {
     return `${day} ${months[month]} ${year}`;
   };
 
+  // Закриття повідомлень
+  const handleCloseSnackbar = () => {
+    setError(null);
+    setSuccess(null);
+  };
+
   return (
     <Box sx={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
-      {/* Close button */}
+      {/* Кнопка закриття */}
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', p: 1 }}>
         <IconButton onClick={onClose}>
           <CloseIcon />
         </IconButton>
       </Box>
       
-      {/* Calendar section */}
+      {/* Секція календаря */}
       <Box sx={{ p: 2, flex: 1 }}>
-        {/* Calendar header */}
+        {/* Заголовок календаря */}
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
-          <IconButton onClick={handlePrevMonth}>
+          <IconButton onClick={handlePrevMonth} disabled={loading}>
             <ChevronLeftIcon />
           </IconButton>
           
@@ -459,23 +504,29 @@ const Calendar = ({ onTimeSelect, onClose }) => {
             {months[currentDate.getMonth()]} {currentDate.getFullYear()}
           </Typography>
           
-          <IconButton onClick={handleNextMonth}>
+          <IconButton onClick={handleNextMonth} disabled={loading}>
             <ChevronRightIcon />
           </IconButton>
         </Box>
         
-        {/* Calendar grid */}
-        <Grid container spacing={1}>
-          {renderCalendarGrid()}
-        </Grid>
+        {/* Сітка календаря */}
+        {loading && !Object.keys(availabilityData).length ? (
+          <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+            <CircularProgress />
+          </Box>
+        ) : (
+          <Grid container spacing={1}>
+            {renderCalendarGrid()}
+          </Grid>
+        )}
       </Box>
       
-      {/* Divider */}
+      {/* Розділювач */}
       <Divider />
       
-      {/* Time slots section */}
+      {/* Секція часових інтервалів */}
       <Box sx={{ p: 2, maxHeight: '40%', overflowY: 'auto' }}>
-        {/* Selected date and actions */}
+        {/* Вибрана дата та дії */}
         {selectedDate && (
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
             <Typography 
@@ -504,26 +555,56 @@ const Calendar = ({ onTimeSelect, onClose }) => {
               startIcon={<AddIcon />}
               onClick={() => setTabValue(1)}
               sx={{ borderRadius: 20 }}
+              disabled={loading}
             >
               Додати
             </Button>
           </Box>
         )}
         
-        {/* Tabs */}
+        {/* Вкладки */}
         <Tabs value={tabValue} onChange={handleTabChange} sx={{ mb: 2 }}>
-          <Tab label="Перегляд" />
-          <Tab label="Додати інтервал" />
+          <Tab label="Перегляд" disabled={loading} />
+          <Tab label="Додати інтервал" disabled={loading} />
         </Tabs>
         
-        {/* Tab panels */}
+        {/* Панелі вкладок */}
         <Box hidden={tabValue !== 0}>
-          <TimeSlots />
+          {loading && selectedDate ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', py: 2 }}>
+              <CircularProgress size={24} />
+            </Box>
+          ) : (
+            <TimeSlots />
+          )}
         </Box>
         <Box hidden={tabValue !== 1}>
           <AddIntervalForm />
         </Box>
       </Box>
+      
+      {/* Повідомлення про помилки та успіх */}
+      <Snackbar 
+        open={!!error} 
+        autoHideDuration={6000} 
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert onClose={handleCloseSnackbar} severity="error" sx={{ width: '100%' }}>
+          {error}
+        </Alert>
+      </Snackbar>
+      
+      <Snackbar 
+        open={!!success} 
+        autoHideDuration={3000} 
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: '100%' }}>
+          {success}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };
