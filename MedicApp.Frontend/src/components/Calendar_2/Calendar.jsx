@@ -15,7 +15,7 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
-
+import {BASE_API} from '../../constants/BASE_API';
 // Українські назви днів тижня та місяців
 const daysOfWeek = ['Нд', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
 const months = [
@@ -100,45 +100,94 @@ const Calendar = ({ onTimeSelect, onClose }) => {
   };
 
   //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  const handleSaveInterval = () => {
+  const handleSaveInterval = async () => {
     if (!selectedDate || !startTime || !endTime) {
       alert('Виберіть дату та час!');
       return;
     }
-
+  
     if (startTime >= endTime) {
       alert('Час початку повинен бути раніше часу закінчення!');
       return;
     }
-
+  
     const year = selectedDate.getFullYear();
     const month = selectedDate.getMonth();
     const day = selectedDate.getDate();
     const dateString = formatDateString(year, month, day);
-
+  
+    console.log(dateString); // 2025-05-07 
+  
     // Generate a mock ID - in a real app, this would come from the backend
     const newId = `${Date.now()}`;
-    
-    // Add new interval
+  
+    // Add new interval locally
     setAvailabilityData(prev => {
       const newData = { ...prev };
       if (!newData[dateString]) {
         newData[dateString] = [];
       }
-      
+  
       newData[dateString] = [
         ...newData[dateString],
         { id: newId, start: startTime, end: endTime }
       ].sort((a, b) => a.start.localeCompare(b.start));
-      
+  
       return newData;
     });
+  
+    const startDateTime = new Date(
+      year, month, day,
+      Number(startTime.split(':')[0]),
+      Number(startTime.split(':')[1])
+    ).toISOString();
+  
+    console.log(startDateTime); // 2025-05-07T09:00:00.000Z
+    const endDateTime = new Date(
+      year, month, day,
+      Number(endTime.split(':')[0]),
+      Number(endTime.split(':')[1])
+    ).toISOString();
+  
+    const localDateStartTime = `${dateString}T${startTime}:00`;
+    const localDateEndTime = `${dateString}T${endTime}:00`;
 
+    console.log(endDateTime); // 2025-05-07T10:30:00.000Z
+    try {
+
+      let token = localStorage.getItem('accessToken');
+      const response = await fetch(`${BASE_API}/doctor/schedule/interval`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          startTime: localDateStartTime,
+          endTime: localDateEndTime,
+          // ⚠️ Якщо medicHelp не потрібен, можна його взагалі не передавати
+          // medicHelp: 0
+        })
+      });
+  
+      if (!response.ok) {
+        throw new Error('Помилка при збереженні інтервалу!');
+      }
+  
+      const result = await response.json();
+      console.log('Інтервал збережено на сервері:', result);
+  
+    } catch (error) {
+      console.error('❌ POST запит не вдався:', error);
+      alert('Не вдалося зберегти інтервал. Спробуйте ще раз.');
+    }
+  
     // Reset form
     setStartTime('');
     setEndTime('');
     setTabValue(0); // Switch back to view tab
   };
+  
 
   // Delete time interval
   const handleDeleteInterval = (dateString, index) => {
