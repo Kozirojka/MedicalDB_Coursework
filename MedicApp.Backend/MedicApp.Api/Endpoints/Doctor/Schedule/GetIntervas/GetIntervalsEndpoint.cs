@@ -14,7 +14,7 @@ public class GetIntervalsEndpoint : IEndpoint
 
     private async Task<IResult> GetIntervas(HttpContext context, CourseWork2Context dbContext)
     {
-        var userIdClaim = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userIdClaim = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (!int.TryParse(userIdClaim, out var userId))
         {
             return Results.Unauthorized();
