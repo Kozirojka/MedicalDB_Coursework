@@ -18,43 +18,45 @@ public class CreateTimeIntervalCommandHandler(CourseWork2Context dbContext, IMed
         if (request.IntervalDto == null)
             return false;
 
-        var targetDate = DateOnly.FromDateTime(request.IntervalDto.EndTime);
-
+        var localStartTime = DateTime.SpecifyKind(request.IntervalDto.StartTime, DateTimeKind.Unspecified);
+        var localEndTime = DateTime.SpecifyKind(request.IntervalDto.EndTime, DateTimeKind.Unspecified);
+        
+        var targetDate = DateOnly.FromDateTime(localEndTime);
+        var doctor = await dbContext.Doctors.SingleOrDefaultAsync(u => u.AccountId == request.DoctorId);
+        
         var schedule = await dbContext.Schedules
-            .FirstOrDefaultAsync(s => s.Date == targetDate && s.DoctorId == request.DoctorId, cancellationToken);
-
+            .FirstOrDefaultAsync(s => s.Date == targetDate && s.DoctorId == doctor.Id, cancellationToken);
+        
         // Якщо не існує — створюємо новий
         if (schedule == null)
         {
             schedule = new Schedule
             {
-                CreatedAt = DateTime.UtcNow,
-                DoctorId = request.DoctorId,
+                CreatedAt = DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Unspecified), // не DateTime.UtcNow!
+                DoctorId = doctor.Id,
                 Date = targetDate
             };
-
+        
             dbContext.Schedules.Add(schedule);
-            await dbContext.SaveChangesAsync(cancellationToken); 
+            await dbContext.SaveChangesAsync(cancellationToken);
         }
-
         
+        var timeStart = TimeOnly.FromDateTime(localStartTime);
+        var timeEnd = TimeOnly.FromDateTime(localEndTime);
         
-        var timeStart = TimeOnly.FromDateTime(request.IntervalDto.StartTime);
-        var timeEnd = TimeOnly.FromDateTime(request.IntervalDto.EndTime);
         var isIntersecting = await dbContext.ScheduleIntervals
             .AnyAsync(u =>
                     u.ScheduleId == schedule.Id &&
                     (
-                        (timeStart < u.EndTime && timeStart >= u.StartTime) || 
-                        (timeEnd > u.StartTime && timeEnd <= u.EndTime) ||     
-                        (timeStart <= u.StartTime && timeEnd >= u.EndTime)     
+                        (timeStart < u.EndTime && timeStart >= u.StartTime) ||
+                        (timeEnd > u.StartTime && timeEnd <= u.EndTime) ||
+                        (timeStart <= u.StartTime && timeEnd >= u.EndTime)
                     ),
                 cancellationToken);
-
+        
         if (isIntersecting)
             return false;
-
-        // Створюємо інтервал
+        
         var newInterval = new ScheduleInterval
         {
             ScheduleId = schedule.Id,
@@ -62,24 +64,24 @@ public class CreateTimeIntervalCommandHandler(CourseWork2Context dbContext, IMed
             EndTime = timeEnd,
             Schedule = schedule
         };
-
+        
         dbContext.ScheduleIntervals.Add(newInterval);
         await dbContext.SaveChangesAsync(cancellationToken);
-    
-        //ось тут ми перевіряємо чи є у запиті інформацію про appointment
+        
         if (request.IntervalDto.MedicHelp != null)
         {
             var helpRequest = await dbContext.MedicalHelpRequests
                 .FindAsync([request.IntervalDto.MedicHelp.Value], cancellationToken);
-
+        
             if (helpRequest != null)
             {
                 helpRequest.ScheduleIntervalId = newInterval.Id;
             }
         }
-
+        
         await dbContext.SaveChangesAsync(cancellationToken);
-
+        
         return true;
+
     }
 }
