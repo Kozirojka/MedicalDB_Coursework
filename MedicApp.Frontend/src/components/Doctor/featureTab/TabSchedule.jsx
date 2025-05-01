@@ -1,4 +1,3 @@
-import Calendar from "../../Calendar/Calendar";
 
 
 const TabSchedule = () => {
@@ -6,7 +5,6 @@ const TabSchedule = () => {
     
     return(
         <>
-            <Calendar/>
         </>
     )
 };

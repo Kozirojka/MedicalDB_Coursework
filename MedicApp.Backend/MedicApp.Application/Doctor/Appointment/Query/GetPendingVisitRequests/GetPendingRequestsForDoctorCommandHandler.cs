@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using MedicApp.Application.Doctor.GetPendingVisitRequests;
 using MedicApp.Domain.Dto.Responce;
 using MedicApp.Infrastructure.Data;
 using MedicApp.Infrastructure.Extension;
@@ -18,31 +17,34 @@ public class GetPendingRequestsForDoctorCommandHandler(CourseWork2Context dbCont
         //     .Where(u => u.Status == request.Doctor.Status)   
         //     .ToListAsync(cancellationToken);
 
+        var doctor = await dbContext.Doctors.SingleOrDefaultAsync(u => u.AccountId == request.Doctor.Id, cancellationToken: cancellationToken);
         var result = await dbContext.MedicalHelpRequests
-            .Where(u => u.DoctorId == u.DoctorId)
+            .Where(u => u.DoctorId == doctor.Id)
             .Where(u => u.Status.Name == request.Doctor.Status)
             .Include(medicalHelpRequest => medicalHelpRequest.Status)
+            .Include(patient => patient.Patient)
+            .ThenInclude(addres => addres.Account)
+            .ThenInclude(add => add.Addresses)
             .ToListAsync(cancellationToken);
 
         var visitRequestDtos = new List<VisitRequestResponce>();
 
         foreach (var vr in result)
         {
-            var patientProfile = await dbContext.Patients
-                .Include(p => p.Account) 
-                .ThenInclude(u => u.Addresses) 
-                .FirstOrDefaultAsync(p => p.Account.Id == vr.PatientId, cancellationToken);
- 
-            var patientAddress = patientProfile?.Account?.Addresses;
+           
 
-            visitRequestDtos.Add(new VisitRequestResponce
-            {
-                Id = vr.Id,
-                PatientId = vr.PatientId,
-                Description = vr.Description,
-                Address = patientAddress.FirstOrDefault().ToDto(),
-                Status = vr.Status.Name
-            });
+            var newWay = vr.Patient.Account?.Addresses.FirstOrDefault();
+
+
+            if (newWay != null)
+                visitRequestDtos.Add(new VisitRequestResponce
+                {
+                    Id = vr.Id,
+                    PatientId = vr.PatientId,
+                    Description = vr.Description,
+                    Address = newWay.ToDto(),
+                    Status = vr.Status.Name
+                });
         }
 
         return visitRequestDtos;
