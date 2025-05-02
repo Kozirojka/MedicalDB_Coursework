@@ -1,29 +1,89 @@
 import React from "react";
-import "./Sidebar.css";
+import { 
+  List, 
+  ListItem, 
+  ListItemButton, 
+  ListItemIcon, 
+  ListItemText, 
+  Drawer, 
+  Divider, 
+  Box,
+  IconButton,
+  Tooltip
+} from "@mui/material";
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
+
+const drawerWidth = 80;
 
 const Sidebar = ({ tabsConfig, activeTab, setActiveTab, onLogout }) => {
   return (
-    <div className="sidebar">
-      <div className="tabs-container">
+    <Drawer
+      variant="permanent"
+      sx={{
+        width: drawerWidth,
+        flexShrink: 0,
+        '& .MuiDrawer-paper': {
+          width: drawerWidth,
+          boxSizing: 'border-box',
+          bgcolor: 'background.paper',
+          borderRight: '1px solid rgba(0, 0, 0, 0.12)',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          padding: '8px 0'
+        },
+      }}
+    >
+      <List disablePadding>
         {tabsConfig.map((tab) => (
-          <button
-            key={tab.key}
-            onClick={() => setActiveTab(tab.key)}
-            className={`tab-button ${activeTab === tab.key ? "active" : ""}`}
-          >
-            <span className="material-icons tab-icon">{tab.icon}</span>
-            <div className="tab-label">{tab.label}</div>
-          </button>
+          <ListItem key={tab.key} disablePadding sx={{ display: 'block', mb: 1 }}>
+            <Tooltip title={tab.label} placement="right">
+              <ListItemButton
+                onClick={() => setActiveTab(tab.key)}
+                selected={activeTab === tab.key}
+                sx={{
+                  minHeight: 48,
+                  justifyContent: 'center',
+                  px: 2.5,
+                  borderRadius: '8px',
+                  mx: 0.5,
+                  '&.Mui-selected': {
+                    bgcolor: 'primary.light',
+                    '&:hover': {
+                      bgcolor: 'primary.light',
+                    },
+                    '& .MuiListItemIcon-root': {
+                      color: 'primary.main',
+                    }
+                  }
+                }}
+              >
+                <ListItemIcon
+                  sx={{
+                    minWidth: 0,
+                    mr: 0,
+                    justifyContent: 'center',
+                  }}
+                >
+                  {tab.icon}
+                </ListItemIcon>
+              </ListItemButton>
+            </Tooltip>
+          </ListItem>
         ))}
-      </div>
+      </List>
 
-      <div className="user-profile">
-        <button className="profile-button" onClick={onLogout}>
-          <span className="material-icons tab-icon">account_circle</span>
-          <div className="profile-label">Вийти</div>
-        </button>
-      </div>
-    </div>
+      <Box>
+        <Divider />
+        <Box sx={{ p: 1, display: 'flex', justifyContent: 'center' }}>
+          <Tooltip title="Вийти" placement="right">
+            <IconButton onClick={onLogout} color="primary">
+              <ExitToAppIcon />
+            </IconButton>
+          </Tooltip>
+        </Box>
+      </Box>
+    </Drawer>
   );
 };
 
