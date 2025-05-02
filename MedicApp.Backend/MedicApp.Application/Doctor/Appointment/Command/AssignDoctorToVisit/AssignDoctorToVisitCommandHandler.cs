@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using MediatR;
-using MedicApp.Application.Doctor.AssignDoctorToVisit;
 using MedicApp.Domain.Dto.Responce;
 using MedicApp.Infrastructure.Data;
 using MedicApp.Infrastructure.Models;
@@ -23,7 +22,7 @@ public class AssignDoctorToVisitCommandHandler(
             throw new NotFoundException($"Visit with ID {request.VisitId} not found");
         }
 
-        var doctor = await  dbContext.Accounts.FindAsync(request.DoctorId, cancellationToken);
+        var doctor = await dbContext.Accounts.FindAsync(request.DoctorId, cancellationToken);
         
         var role = dbContext.Roles.SingleOrDefault(u => u.Name == "Doctor");
         
@@ -34,16 +33,17 @@ public class AssignDoctorToVisitCommandHandler(
         }
 
 
-        var status = await dbContext.Roles.SingleOrDefaultAsync(u => u.Name == "Doctor");
+        var status = await dbContext.HelpRequestStatuses
+            .SingleOrDefaultAsync(u => u.Name == "InProgress", cancellationToken: cancellationToken);
         
 
         
         medicalHelpRequest.StatusId = status.Id;
        
-        var visit = dbContext.ScheduleIntervals.SingleOrDefault(u => u.Id == request.SlotTimeId);
+        var sceduleInterval = dbContext.ScheduleIntervals.SingleOrDefault(u => u.Id == request.SlotTimeId);
         
         
-        medicalHelpRequest.ScheduleIntervalId = visit.Id;
+        medicalHelpRequest.ScheduleIntervalId = sceduleInterval.Id;
         
         
         await dbContext.SaveChangesAsync(cancellationToken);

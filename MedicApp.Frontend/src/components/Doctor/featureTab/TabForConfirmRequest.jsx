@@ -28,18 +28,18 @@ export default function RequestForConfirm({ requests, loading, error }) {
       
       console.log("Selected request:", selectedRequest);
       console.log("Selected time slot ID:", timeSlotId);
-      // const response = await fetch(
-      //   `${BASE_API}/doctor/assign/${selectedRequest.id}/${timeSlotId}`,
-      //   {
-      //     method: "PUT",
-      //     headers: {
-      //       Authorization: `Bearer ${token}`,
-      //       "Content-Type": "application/json",
-      //     },
-      //   }
-      // );
+      const response = await fetch(
+        `${BASE_API}/doctor/assign/${selectedRequest.id}/${timeSlotId}`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
       
-      // if (!response.ok) throw new Error("Failed to assign time");
+      if (!response.ok) throw new Error("Failed to assign time");
       
       handleCloseCalendar();
     } catch (error) {

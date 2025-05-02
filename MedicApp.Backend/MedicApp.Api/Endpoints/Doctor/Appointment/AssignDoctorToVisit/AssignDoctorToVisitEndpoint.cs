@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
 using MediatR;
-using MedicApp.Application.Doctor.AssignDoctorToVisit;
+using MedicApp.Application.Doctor.Appointment.Command.AssignDoctorToVisit;
 
 namespace MedicApp.Api.Endpoints.Doctor.Appointment.AssignDoctorToVisit;
 
@@ -16,10 +16,10 @@ public class AssignDoctorToVisitEndpoint : IEndpoint
 
     public void RegisterEndpoints(IEndpointRouteBuilder endpoints)
     {
-        endpoints.MapPut("/api/doctor/assign/{visitId}/{scheduleId}", Handler);
+        endpoints.MapPut("/api/doctor/assign/{visitId}/{slotId}", Handler);
     }
 
-    private async Task<IResult> Handler(HttpContext context, IMediator mediator, int visitId, int scheduleId)
+    private async Task<IResult> Handler(HttpContext context, IMediator mediator, int visitId, int slotId)
     {
         
         var userIdClaim = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -28,7 +28,7 @@ public class AssignDoctorToVisitEndpoint : IEndpoint
             return Results.Unauthorized();
         }
         
-        var command = new AssignDoctorToVisitCommand(visitId, userId, scheduleId);
+        var command = new AssignDoctorToVisitCommand(visitId, userId, slotId);
         
         var result = await mediator.Send(command);
 
