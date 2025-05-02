@@ -33,8 +33,9 @@ public class CancleAppointmnetEndpoint : IEndpoint
             return Results.NotFound();
         }
         
-        result.Status.Name = "CancelledByPatient";
-        
+        var status = await courseWork2Context.HelpRequestStatuses.SingleOrDefaultAsync(s => s.Name == "CancelledByPatient");
+        if (status != null) result.StatusId = status.Id;
+
         courseWork2Context.MedicalHelpRequests.Update(result);
         await courseWork2Context.SaveChangesAsync();
         

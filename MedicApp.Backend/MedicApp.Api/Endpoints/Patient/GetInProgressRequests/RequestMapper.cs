@@ -8,7 +8,7 @@ public static class RequestMapper
     {
         if (requests == null)
             return new List<MedicalHelpDto>();
-            
+        
         return requests.Select(request => new MedicalHelpDto
         {
             Id = request.Id,
@@ -17,7 +17,9 @@ public static class RequestMapper
             StatusName = request.Status?.Name,
             PatientId = request.PatientId,
             DoctorId = request.DoctorId,
-            DoctorName = request.Doctor.Account.Firstname + " " + request.Doctor.Account.Lastname,
+            DoctorName = request.Doctor?.Account != null 
+            ? request.Doctor.Account.Firstname + " " + request.Doctor.Account.Lastname 
+            : null,
             ScheduleInfo = request.ScheduleInterval != null ? new ScheduleInfoDto
             {
                 IntervalId = request.ScheduleInterval.Id,

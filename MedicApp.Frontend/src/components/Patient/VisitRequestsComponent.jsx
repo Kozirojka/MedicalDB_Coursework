@@ -36,6 +36,8 @@ const VisitRequestsComponent = () => {
       setLoading(true);
       const token = localStorage.getItem('accessToken'); 
       
+      
+
       const response = await fetch(`${BASE_API}/patient/visit-requests`, {
         method: 'GET',
         headers: {
@@ -49,8 +51,6 @@ const VisitRequestsComponent = () => {
       }
       
       const data = await response.json();
-
-      console.log(data)
       setVisitRequests(data);
     } catch (err) {
       setError(err.message);
@@ -76,6 +76,7 @@ const VisitRequestsComponent = () => {
         throw new Error('Failed to reject visit request');
       }
       
+      // Refresh visit requests after rejection
       fetchVisitRequests();
     } catch (err) {
       console.error('Error rejecting visit request:', err);
@@ -86,8 +87,7 @@ const VisitRequestsComponent = () => {
     try {
       setDoctorDataLoading(true);
       const token = localStorage.getItem('accessToken');
-      console.log(token)
-
+      
       const response = await fetch(`${BASE_API}/doctor/info/${doctorId}`, {
         method: 'GET',
         headers: {
@@ -115,26 +115,38 @@ const VisitRequestsComponent = () => {
   };
 
   const formatDate = (dateString) => {
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString(undefined, options);
+    if (!dateString) return 'Дата не вказана';
+    try {
+      const options = { year: 'numeric', month: 'long', day: 'numeric' };
+      return new Date(dateString).toLocaleDateString(undefined, options);
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return 'Невірний формат дати';
+    }
   };
 
   const formatTime = (timeString) => {
-    const [hours, minutes] = timeString.split(':');
-    const date = new Date();
-    date.setHours(parseInt(hours, 10));
-    date.setMinutes(parseInt(minutes, 10));
-    
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    if (!timeString) return 'Не вказано';
+    try {
+      const [hours, minutes] = timeString.split(':');
+      const date = new Date();
+      date.setHours(parseInt(hours, 10));
+      date.setMinutes(parseInt(minutes, 10));
+      
+      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    } catch (error) {
+      console.error('Error formatting time:', error);
+      return 'Невірний формат часу';
+    }
   };
 
   // Status color mapping
   const statusColors = {
-    "AssignedToDoctor": "warning",
+    "Pending": "warning",
     "InProgress": "info",
     "Completed": "success",
-    "DoctorRejected": "error",
-    "CancelledByPatient": "error"
+    "Cancelled": "error",
+    "Rejected": "error"
   };
 
   if (loading) {
@@ -211,19 +223,23 @@ const VisitRequestsComponent = () => {
                     </Typography>
                   </Box>
                   
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                    <CalendarTodayIcon fontSize="small" sx={{ mr: 1, color: 'text.secondary' }} />
-                    <Typography variant="body2" color="text.secondary">
-                      {formatDate(request.scheduleInfo.date)}
-                    </Typography>
-                  </Box>
+                  {request.scheduleInfo && request.scheduleInfo.date && (
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                      <CalendarTodayIcon fontSize="small" sx={{ mr: 1, color: 'text.secondary' }} />
+                      <Typography variant="body2" color="text.secondary">
+                        {formatDate(request.scheduleInfo.date)}
+                      </Typography>
+                    </Box>
+                  )}
                   
-                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <AccessTimeIcon fontSize="small" sx={{ mr: 1, color: 'text.secondary' }} />
-                    <Typography variant="body2" color="text.secondary">
-                      {formatTime(request.scheduleInfo.startTime)} - {formatTime(request.scheduleInfo.endTime)}
-                    </Typography>
-                  </Box>
+                  {request.scheduleInfo && request.scheduleInfo.startTime && request.scheduleInfo.endTime && (
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <AccessTimeIcon fontSize="small" sx={{ mr: 1, color: 'text.secondary' }} />
+                      <Typography variant="body2" color="text.secondary">
+                        {formatTime(request.scheduleInfo.startTime)} - {formatTime(request.scheduleInfo.endTime)}
+                      </Typography>
+                    </Box>
+                  )}
                 </CardContent>
                 
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', p: 2, pt: 0 }}>
@@ -277,10 +293,10 @@ const VisitRequestsComponent = () => {
             <>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
                 <Avatar sx={{ width: 64, height: 64, mr: 2, bgcolor: 'primary.main' }}>
-                  {selectedDoctor.fullname?.charAt(0) || 'D'}
+                  {selectedDoctor.name?.charAt(0) || 'D'}
                 </Avatar>
                 <Box>
-                  <Typography variant="h6">Dr. {selectedDoctor.fullName || 'Unknown'}</Typography>
+                  <Typography variant="h6">Dr. {selectedDoctor.name || 'Unknown'}</Typography>
                   <Typography variant="body2" color="text.secondary">
                     {selectedDoctor.specialization || selectedDoctor.specialty || 'Specialist'}
                   </Typography>
@@ -338,9 +354,17 @@ const VisitRequestsComponent = () => {
                 <strong>Email:</strong> {selectedDoctor.email || selectedDoctor.contactInfo?.email || 'Not available'}
               </Typography>
               <Typography variant="body2">
-                <strong>Phone:</strong> {selectedDoctor.phonenumber || selectedDoctor.contactInfo?.phonenumber || 'Not available'}
+                <strong>Phone:</strong> {selectedDoctor.phone || selectedDoctor.contactInfo?.phone || 'Not available'}
               </Typography>
               
+              <Button 
+                variant="contained" 
+                color="primary" 
+                fullWidth 
+                sx={{ mt: 3 }}
+              >
+                Schedule Appointment
+              </Button>
             </>
           ) : (
             <Typography>No doctor information available</Typography>
