@@ -30,8 +30,4 @@
       <ProjectReference Include="..\MedicApp.Application\MedicApp.Application.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Endpoints\Doctor\Appointment\" />
-    </ItemGroup>
-
 </Project>
