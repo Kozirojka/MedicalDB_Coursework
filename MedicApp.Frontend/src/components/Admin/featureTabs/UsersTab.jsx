@@ -51,6 +51,7 @@ export default function UsersTab() {
   const fetchUsers = async (query = '') => {
     setLoading(true);
     try {
+      console.log(`${BASE_API}/users${query}`);
       const response = await fetch(`${BASE_API}/users${query}`);
       
       if (!response.ok) {
@@ -58,69 +59,19 @@ export default function UsersTab() {
       }
       
       const data = await response.json();
+      console.log(data);
       
-      const allUsers = [...(data.doctors || []), ...(data.patients || [])];
-      setUsers(allUsers);
+      if (Array.isArray(data)) {
+        setUsers(data);
+      } else if (data.doctors || data.patients) {
+        const allUsers = [...(data.doctors || []), ...(data.patients || [])];
+        setUsers(allUsers);
+      } else {
+        setUsers([]);
+        throw new Error('Неочікуваний формат даних');
+      }
     } catch (err) {
       setError(err.message);
-      const mockData = {
-        doctors: [
-          {
-            id: 2,
-            accountId: 14,
-            fullName: "doctor1 doctor",
-            phoneNumber: "+10001111",
-            email: "doctor1@gmail.com",
-            specializations: ["Traumatologist", "Psychotherapist"],
-            type: "Doctor",
-            address: {
-              country: "Ukraine",
-              city: "Lviv",
-              street: "Akademika Andriya Sakharova St",
-              building: "25",
-              appartaments: "243",
-              fullAddress: "Ukraine, Lviv, Akademika Andriya Sakharova St, 25, 243"
-            }
-          }
-        ],
-        patients: [
-          {
-            id: 4,
-            accountId: 11,
-            fullName: "Kostya Vykhovanets",
-            phoneNumber: "+1000000000",
-            email: "Kostya@gmail.com",
-            type: "Patient",
-            address: {
-              country: "Ukraine",
-              city: "Lviv",
-              street: "Naukova",
-              building: "4",
-              appartaments: "39",
-              fullAddress: "Ukraine, Lviv, Naukova, 4, 39"
-            }
-          },
-          {
-            id: 5,
-            accountId: 12,
-            fullName: "Artem Vykhovanets",
-            phoneNumber: "+1000000001",
-            email: "Artem@gmail.com",
-            type: "Patient",
-            address: {
-              country: "Ukraine",
-              city: "Lviv",
-              street: "Panasa Myrnoho St",
-              building: "18",
-              appartaments: "39",
-              fullAddress: "Ukraine, Lviv, Panasa Myrnoho St, 18, 39"
-            }
-          }
-        ]
-      };
-      
-      const allUsers = [...(mockData.doctors || []), ...(mockData.patients || [])];
-      setUsers(allUsers);
     } finally {
       setLoading(false);
     }
@@ -136,7 +87,8 @@ export default function UsersTab() {
     if (searchQuery) {
       query += `${query ? '&' : '?'}fullname=${encodeURIComponent(searchQuery)}`;
     }
-    
+
+    console.log(query);
     fetchUsers(query);
   };
 
