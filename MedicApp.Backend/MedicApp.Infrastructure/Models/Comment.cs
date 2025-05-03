@@ -15,6 +15,8 @@ public partial class Comment
 
     public DateTime? CreatedAt { get; set; }
 
+    public int? Adequacy { get; set; }
+
     public virtual Account? Author { get; set; }
 
     public virtual MedicalHelpRequest? HelpRequest { get; set; }

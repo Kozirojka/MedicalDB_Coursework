@@ -142,6 +142,7 @@ public partial class CourseWork2Context : DbContext
             entity.ToTable("comments");
 
             entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Adequacy).HasColumnName("adequacy");
             entity.Property(e => e.AuthorId).HasColumnName("author_id");
             entity.Property(e => e.CommentText)
                 .HasMaxLength(100)
