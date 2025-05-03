@@ -22,6 +22,8 @@ public partial class CourseWork2Context : DbContext
 
     public virtual DbSet<Admin> Admins { get; set; }
 
+    public virtual DbSet<Comment> Comments { get; set; }
+
     public virtual DbSet<Doctor> Doctors { get; set; }
 
     public virtual DbSet<Education> Educations { get; set; }
@@ -131,6 +133,32 @@ public partial class CourseWork2Context : DbContext
                 .HasForeignKey(d => d.Accountid)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_admin_account");
+        });
+
+        modelBuilder.Entity<Comment>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("comments_pkey");
+
+            entity.ToTable("comments");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.AuthorId).HasColumnName("author_id");
+            entity.Property(e => e.CommentText)
+                .HasMaxLength(100)
+                .HasColumnName("comment_text");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("now()")
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("created_at");
+            entity.Property(e => e.HelpRequestId).HasColumnName("help_request_id");
+
+            entity.HasOne(d => d.Author).WithMany(p => p.Comments)
+                .HasForeignKey(d => d.AuthorId)
+                .HasConstraintName("comments_author_id_fkey");
+
+            entity.HasOne(d => d.HelpRequest).WithMany(p => p.Comments)
+                .HasForeignKey(d => d.HelpRequestId)
+                .HasConstraintName("comments_help_request_id_fkey");
         });
 
         modelBuilder.Entity<Doctor>(entity =>

@@ -60,12 +60,6 @@ export default function DoctorDashboard() {
                     <h2>Інформація про пацієнтів</h2>
                 </div>
             )
-        },
-        {
-            key: 'chat',
-            label: 'Чат',
-            icon: <ChatIcon style={{ fontSize: 40, color: '#4caf50' }} />,
-            component: <ChatTab />
         }
     ];
 
