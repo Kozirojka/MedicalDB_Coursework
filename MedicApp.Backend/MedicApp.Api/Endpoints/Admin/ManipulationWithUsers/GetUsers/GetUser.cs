@@ -18,11 +18,13 @@ public class GetUser : IEndpoint
     {
         var doctorsQuery = context.Doctors
             .Include(d => d.Account)
+            .Include(d => d.Account.Addresses) // Додаємо адреси
             .Include(d => d.Specializations)
             .AsQueryable();
             
         var patientsQuery = context.Patients
             .Include(p => p.Account)
+            .Include(p => p.Account.Addresses) // Додаємо адреси
             .AsQueryable();
             
         if (!string.IsNullOrEmpty(fullname))
@@ -53,7 +55,17 @@ public class GetUser : IEndpoint
                     PhoneNumber = d.Account.Phonenumber,
                     Email = d.Account.Email,
                     Specializations = d.Specializations.Select(s => s.Name).ToList(),
-                    Type = "Doctor"
+                    Type = "Doctor",
+                    Address = d.Account.Addresses.Select(a => new
+                    {
+                        Country = a.Country,
+                        City = a.City,
+                        Street = a.Street,
+                        Building = a.Building,
+                        Appartaments = a.Appartaments,
+                        FullAddress = $"{a.Country}, {a.City}, {a.Street}, {a.Building}" + 
+                                    (!string.IsNullOrEmpty(a.Appartaments) ? $", {a.Appartaments}" : "")
+                    }).FirstOrDefault()
                 }),
                 
                 Patients = patients.Select(p => new
@@ -63,7 +75,17 @@ public class GetUser : IEndpoint
                     FullName = $"{p.Account.Firstname} {p.Account.Lastname}",
                     PhoneNumber = p.Account.Phonenumber,
                     Email = p.Account.Email,
-                    Type = "Patient"
+                    Type = "Patient",
+                    Address = p.Account.Addresses.Select(a => new
+                    {
+                        Country = a.Country,
+                        City = a.City,
+                        Street = a.Street,
+                        Building = a.Building,
+                        Appartaments = a.Appartaments,
+                        FullAddress = $"{a.Country}, {a.City}, {a.Street}, {a.Building}" + 
+                                    (!string.IsNullOrEmpty(a.Appartaments) ? $", {a.Appartaments}" : "")
+                    }).FirstOrDefault()
                 })
             };
             
@@ -81,7 +103,17 @@ public class GetUser : IEndpoint
                 PhoneNumber = d.Account.Phonenumber,
                 Email = d.Account.Email,
                 Specializations = d.Specializations.Select(s => s.Name).ToList(),
-                Type = "Doctor"
+                Type = "Doctor",
+                Address = d.Account.Addresses.Select(a => new
+                {
+                    Country = a.Country,
+                    City = a.City,
+                    Street = a.Street,
+                    Building = a.Building,
+                    Appartaments = a.Appartaments,
+                    FullAddress = $"{a.Country}, {a.City}, {a.Street}, {a.Building}" + 
+                                (!string.IsNullOrEmpty(a.Appartaments) ? $", {a.Appartaments}" : "")
+                }).FirstOrDefault()
             });
             
             return Results.Ok(results);
@@ -97,7 +129,17 @@ public class GetUser : IEndpoint
                 FullName = $"{p.Account.Firstname} {p.Account.Lastname}",
                 PhoneNumber = p.Account.Phonenumber,
                 Email = p.Account.Email,
-                Type = "Patient"
+                Type = "Patient",
+                Address = p.Account.Addresses.Select(a => new
+                {
+                    Country = a.Country,
+                    City = a.City,
+                    Street = a.Street,
+                    Building = a.Building,
+                    Appartaments = a.Appartaments,
+                    FullAddress = $"{a.Country}, {a.City}, {a.Street}, {a.Building}" + 
+                                (!string.IsNullOrEmpty(a.Appartaments) ? $", {a.Appartaments}" : "")
+                }).FirstOrDefault()
             });
             
             return Results.Ok(results);

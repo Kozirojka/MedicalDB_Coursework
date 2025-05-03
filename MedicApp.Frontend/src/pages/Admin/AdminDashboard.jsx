@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import "../../styles/Admin/AdminDashboard.css";
 import RequestsTab from "../../components/Admin/featureTabs/RequestsTab";
+import UsersTab from "../../components/Admin/featureTabs/UsersTab";
 import Sidebar from "../../components/Shared/Sidebar/Sidebar";
 import ListAltIcon from "@mui/icons-material/ListAlt";
 import PeopleIcon from "@mui/icons-material/People";
@@ -27,11 +28,7 @@ export default function AdminDashboard() {
       key: "users",
       label: "Користувачі",
       icon: <PeopleIcon />,
-      component: (
-        <div>
-          <h2>Інформація про користувачів</h2>
-        </div>
-      ),
+      component: <UsersTab />,
     },
   ];
 
