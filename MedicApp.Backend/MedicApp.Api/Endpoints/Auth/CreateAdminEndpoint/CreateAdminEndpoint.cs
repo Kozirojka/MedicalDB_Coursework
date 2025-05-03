@@ -1,6 +1,5 @@
 using MediatR;
 using MedicApp.Application.Auth.Command.CreateAdminCommand;
-using MedicApp.Application.LogReg.Command.CreateDoctor;
 using MedicApp.Domain.Dto.Requests;
 
 namespace MedicApp.Api.Endpoints.Auth.CreateAdminEndpoint;
@@ -9,7 +8,7 @@ public class CreateAdminEndpoint : IEndpoint
 {
     public void RegisterEndpoints(IEndpointRouteBuilder endpoints)
     {
-        endpoints.MapPost("/register/admin", Handler).AllowAnonymous();
+        endpoints.MapPost("/api/register/admin", Handler).AllowAnonymous();
     }
 
     private async Task<IResult> Handler(IMediator _Mediator, CreatePatientRequest request)

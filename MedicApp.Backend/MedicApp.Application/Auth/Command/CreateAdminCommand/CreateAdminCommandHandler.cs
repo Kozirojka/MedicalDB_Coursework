@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using MedicApp.Application.LogReg.Command;
-using MedicApp.Application.LogReg.Command.CreateDoctor;
 using MedicApp.Domain.Dto;
 using MedicApp.Domain.Dto.Responce;
 using MedicApp.Infrastructure.Data;

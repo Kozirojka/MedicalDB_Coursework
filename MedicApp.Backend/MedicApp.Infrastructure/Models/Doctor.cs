@@ -15,5 +15,7 @@ public partial class Doctor
 
     public virtual ICollection<Schedule> Schedules { get; set; } = new List<Schedule>();
 
+    public virtual ICollection<Education> Educations { get; set; } = new List<Education>();
+
     public virtual ICollection<Specialization> Specializations { get; set; } = new List<Specialization>();
 }

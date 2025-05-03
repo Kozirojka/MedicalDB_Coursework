@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using MedicApp.Application.LogReg.Command;
-using MedicApp.Application.LogReg.Command.CreateDoctor;
 using MedicApp.Domain.Dto;
 using MedicApp.Domain.Dto.Responce;
 using MedicApp.Infrastructure.Data;
@@ -40,7 +39,7 @@ public class CreateDoctorCommandHandler(
             };
         }
 
-        if (await context.Accounts.SingleOrDefaultAsync(a => a.Email == request.DriverRequest.Email) != null)
+        if (await context.Accounts.SingleOrDefaultAsync(a => a.Email == request.DriverRequest.Email, cancellationToken: cancellationToken) != null)
         {
             return new AuthResult
             {
@@ -104,17 +103,22 @@ public class CreateDoctorCommandHandler(
             };
         }
         
-        int[] selectedSpecializationIds = new int[] { 1, 2 };
-        
+
         var specializations = await context.Specializations
-            .Where(s => selectedSpecializationIds.Contains(s.Id))
+            .Where(x => request.DriverRequest.Specialization.Contains(x.Name))
             .ToListAsync(cancellationToken: cancellationToken);
+        
+        var education = await context.Educations
+            .Where(x => request.DriverRequest.Education.Contains(x.Name))
+            .ToListAsync(cancellationToken: cancellationToken);
+        
         
         
         var doctorProfile = new Infrastructure.Models.Doctor()
         {
             AccountId = user.Id,
             Specializations = specializations,
+            Educations = education
         };
 
 

@@ -20,7 +20,11 @@ public class GetDoctorInformation : IEndpoint
         }
         
         
-        var doctorInfo = await dbContext.Doctors.Include(u => u.Account).SingleOrDefaultAsync(x => x.Id == id);
+        var doctorInfo = await dbContext.Doctors
+            .Include(u => u.Educations)
+            .Include(u => u.Specializations)
+            .Include(u => u.Account)
+            .SingleOrDefaultAsync(x => x.Id == id);
         
         
         return Results.Ok(doctorInfo.DoctorInfoDto());
