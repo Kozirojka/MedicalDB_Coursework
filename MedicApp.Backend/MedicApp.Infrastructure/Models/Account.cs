@@ -25,6 +25,8 @@ public partial class Account
 
     public virtual ICollection<Admin> Admins { get; set; } = new List<Admin>();
 
+    public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();
+
     public virtual Doctor? Doctor { get; set; }
 
     public virtual Patient? Patient { get; set; }

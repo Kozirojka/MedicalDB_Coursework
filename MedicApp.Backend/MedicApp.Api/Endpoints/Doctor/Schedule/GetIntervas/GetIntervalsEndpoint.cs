@@ -25,7 +25,8 @@ public class GetIntervalsEndpoint : IEndpoint
         
         var results = dbContext.Schedules
             .Include(u => u.ScheduleIntervals)
-            .ThenInclude(si => si.MedicalHelpRequests) // Додаємо, щоб перевірити чи інтервал зайнятий
+            .ThenInclude(si => si.MedicalHelpRequests)
+            .ThenInclude(si => si.Status)
             .Where(u => u.Date > DateOnly.FromDateTime(DateTime.Today))
             .Where(u => doctor != null && u.DoctorId == doctor.Id)
             .ToList();

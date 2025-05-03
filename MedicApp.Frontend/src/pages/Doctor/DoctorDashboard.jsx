@@ -9,7 +9,7 @@ import ChatIcon from '@mui/icons-material/Chat';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import PersonIcon from '@mui/icons-material/Person';
 import TabSchedule from '../../components/Doctor/featureTab/TabSchedule';
-
+import TabPatientDetail from '../../components/Doctor/featureTab/TabPatientDetail';
 export default function DoctorDashboard() {
     const [activeTab, setActiveTab] = useState('pending');
     const [requests, setRequests] = useState([]);
@@ -55,17 +55,7 @@ export default function DoctorDashboard() {
             key: 'patients',
             label: 'Пацієнти',
             icon: <PersonIcon style={{ fontSize: 40, color: '#4caf50' }}/>,
-            component: (
-                <div>
-                    <h2>Інформація про пацієнтів</h2>
-                </div>
-            )
-        },
-        {
-            key: 'chat',
-            label: 'Чат',
-            icon: <ChatIcon style={{ fontSize: 40, color: '#4caf50' }} />,
-            component: <ChatTab />
+            component: <TabPatientDetail/>
         }
     ];
 
