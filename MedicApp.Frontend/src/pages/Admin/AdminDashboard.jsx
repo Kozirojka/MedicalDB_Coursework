@@ -2,17 +2,13 @@ import { useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import "../../styles/Admin/AdminDashboard.css";
 import RequestsTab from "../../components/Admin/featureTabs/RequestsTab";
+import RegisterDoctorType from "../../components/Admin/featureTabs/RegisterDoctorType";
 import UsersTab from "../../components/Admin/featureTabs/UsersTab";
 import Sidebar from "../../components/Shared/Sidebar/Sidebar";
 import ListAltIcon from "@mui/icons-material/ListAlt";
 import PeopleIcon from "@mui/icons-material/People";
-import DashboardIcon from "@mui/icons-material/Dashboard";
-import SettingsIcon from "@mui/icons-material/Settings";
-import LogoutIcon from "@mui/icons-material/Logout";
-import NotificationsIcon from "@mui/icons-material/Notifications";
 import PersonIcon from "@mui/icons-material/Person";
-import BarChartIcon from "@mui/icons-material/BarChart";
-
+import MedicalInformationIcon from '@mui/icons-material/MedicalInformation';
 export default function AdminDashboard() {
   const { logout } = useAuth();
   const [activeTab, setActiveTab] = useState("requests");
@@ -30,6 +26,12 @@ export default function AdminDashboard() {
       icon: <PeopleIcon />,
       component: <UsersTab />,
     },
+    {
+      key: "register",
+      label: "Реєстрація лікаря",
+      icon: <MedicalInformationIcon />,
+      component: <RegisterDoctorType />,
+    }
   ];
 
   const handleLogout = () => {

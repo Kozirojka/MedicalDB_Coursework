@@ -334,6 +334,14 @@ export default function UsersTab() {
             >
               {selectedUser.type === 'Doctor' ? 'Записатися на прийом' : 'Зв\'язатися з пацієнтом'}
             </Button>
+            <Button 
+              variant="contained" 
+              color="error" 
+              fullWidth
+              sx={{ mt: 2 }}
+            >
+              {"Заблокувати Користувача"}
+            </Button>
           </Box>
         )}
       </Drawer>

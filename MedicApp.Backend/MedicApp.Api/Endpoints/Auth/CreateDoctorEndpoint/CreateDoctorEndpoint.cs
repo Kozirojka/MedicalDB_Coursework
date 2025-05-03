@@ -9,7 +9,7 @@ public class CreateDoctorEndpoint : IEndpoint
 {
     public void RegisterEndpoints(IEndpointRouteBuilder endpoints)
     {
-        endpoints.MapPost("/register/doctor", Handler).AllowAnonymous();
+        endpoints.MapPost("/api/register/doctor", Handler).AllowAnonymous();
     }
 
     private async Task<IResult> Handler(IMediator _Mediator, CreateDoctorRequest request)
