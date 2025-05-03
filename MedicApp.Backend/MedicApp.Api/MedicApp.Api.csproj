@@ -30,4 +30,8 @@
       <ProjectReference Include="..\MedicApp.Application\MedicApp.Application.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Endpoints\Admin\ManipulationWithUsers\GetDetailAboutUser\" />
+    </ItemGroup>
+
 </Project>

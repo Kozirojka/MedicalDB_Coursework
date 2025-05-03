@@ -1,4 +1,4 @@
-namespace MedicApp.Domain.Dto;
+namespace MedicApp.Domain.Dto.Responce;
 
     
 public class AuthResponseDto

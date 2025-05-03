@@ -1,5 +1,5 @@
 using MediatR;
-using MedicApp.Application.LogReg.Command.CreateDoctor;
+using MedicApp.Application.Auth.Command.CreateDoctor;
 using MedicApp.Application.LogReg.Command.CreatePatient;
 using MedicApp.Domain.Dto.Requests;
 
@@ -9,10 +9,10 @@ public class CreateDoctorEndpoint : IEndpoint
 {
     public void RegisterEndpoints(IEndpointRouteBuilder endpoints)
     {
-        endpoints.MapPost("/register/doctor", Handler).AllowAnonymous();
+        endpoints.MapPost("/api/register/doctor", Handler).AllowAnonymous();
     }
 
-    private async Task<IResult> Handler(IMediator _Mediator, CreatePatientRequest request)
+    private async Task<IResult> Handler(IMediator _Mediator, CreateDoctorRequest request)
     {
         var command = new CreateDoctorCommand(request);
         var result = await _Mediator.Send(command);
