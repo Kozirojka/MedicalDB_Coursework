@@ -1,8 +1,19 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import '../styles/Login/Login.css';
-
+// Material UI імпорти
+import {
+  TextField,
+  Button,
+  Paper,
+  Typography,
+  Container,
+  Box,
+  Alert,
+  Link as MuiLink
+} from '@mui/material';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import Avatar from '@mui/material/Avatar';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -35,41 +46,73 @@ export default function Login() {
   };
 
   return (
-    <div className="loginContainer">
-    <div className="formWrapper">
-      <h2 className="title">Вхід в систему</h2>
-      {error && <div className="error">{error}</div>}
-      <form onSubmit={handleSubmit} className="form">
-        <div className="inputGroup">
-          <label htmlFor="email" className="label">Email</label>
-          <input
+    <Container component="main" maxWidth="xs">
+      <Box
+        sx={{
+          marginTop: 8,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
+        <Avatar sx={{ m: 1, bgcolor: 'primary.main' }}>
+          <LockOutlinedIcon />
+        </Avatar>
+        <Typography component="h1" variant="h5">
+          Вхід в систему
+        </Typography>
+        
+        {error && (
+          <Alert severity="error" sx={{ width: '100%', mt: 2 }}>
+            {error}
+          </Alert>
+        )}
+        
+        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3, width: '100%' }}>
+          <TextField
+            margin="normal"
+            required
+            fullWidth
             id="email"
-            type="email"
+            label="Email"
+            name="email"
+            autoComplete="email"
+            autoFocus
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            required
-            className="input"
+            variant="outlined"
           />
-        </div>
-        <div className="inputGroup">
-          <label htmlFor="password" className="label">Пароль</label>
-          <input
-            id="password"
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            name="password"
+            label="Пароль"
             type="password"
+            id="password"
+            autoComplete="current-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            required
-            className="input"
+            variant="outlined"
           />
-        </div>
-        <button type="submit" className="submitButton">Увійти</button>
-      </form>
-      <div className="registerLink">
-           <br/>
-          <p>Ще не зареєстровані? <br/>
-            <Link to="/register">Зареєструйтесь тут</Link></p>
-        </div>
-    </div>
-  </div>
-  )  
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2 }}
+          >
+            Увійти
+          </Button>
+          <Box sx={{ mt: 2, textAlign: 'center' }}>
+            <Typography variant="body2">
+              Ще не зареєстровані?
+            </Typography>
+            <MuiLink component={Link} to="/register" variant="body2">
+              Зареєструйтесь тут
+            </MuiLink>
+          </Box>
+        </Box>
+      </Box>
+    </Container>
+  );
 }

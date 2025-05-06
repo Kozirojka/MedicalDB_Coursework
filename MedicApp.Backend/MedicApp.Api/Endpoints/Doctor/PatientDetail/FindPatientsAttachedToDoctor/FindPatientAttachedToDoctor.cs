@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using MedicApp.Api.Endpoints.Doctor.PatientDetail.FindPatientsAttachedToDoctor;
 using MedicApp.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,14 +20,17 @@ public class FindPatientAttachedToDoctor : IEndpoint
             return Results.Unauthorized();
         }
     
-        var patient = Dbcontext.MedicalHelpRequests
+        var patients = Dbcontext.MedicalHelpRequests
             .Include(x => x.Patient)
             .ThenInclude(x => x.Account)
             .ThenInclude(x => x.Addresses)
+            .Include(x => x.Doctor)
             .Where(x => x.Doctor.AccountId == userId)
             .Select(x => x.Patient)
-            .FirstOrDefault();;
-        
-        return Results.Ok(patient.PatientToDto());
+            .GroupBy(p => p.Id)
+            .Select(g => g.First())
+            .ToList();
+
+        return Results.Ok(patients.PatientToDto());
     }
 }
