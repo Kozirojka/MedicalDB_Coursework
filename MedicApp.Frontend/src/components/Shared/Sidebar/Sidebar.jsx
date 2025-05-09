@@ -47,12 +47,12 @@ const Sidebar = ({ tabsConfig, activeTab, setActiveTab, onLogout }) => {
                   borderRadius: '8px',
                   mx: 0.5,
                   '&.Mui-selected': {
-                    bgcolor: 'primary.light',
+                    bgcolor: 'primary.main', // змінено на primary.main для синього кольору фону
                     '&:hover': {
-                      bgcolor: 'primary.light',
+                      bgcolor: 'primary.main', // збережено такий самий колір при наведенні
                     },
                     '& .MuiListItemIcon-root': {
-                      color: 'primary.main',
+                      color: 'white', // змінено на білий колір для іконки
                     }
                   }
                 }}
@@ -76,8 +76,19 @@ const Sidebar = ({ tabsConfig, activeTab, setActiveTab, onLogout }) => {
         <Divider />
         <Box sx={{ p: 1, display: 'flex', justifyContent: 'center' }}>
           <Tooltip title="Вийти" placement="right">
-            <IconButton onClick={onLogout} color="primary">
-              <ExitToAppIcon />
+            <IconButton 
+              onClick={onLogout} 
+              sx={{
+                bgcolor: 'transparent',
+                '&:hover': {
+                  bgcolor: 'primary.main',
+                  '& .MuiSvgIcon-root': {
+                    color: 'white',
+                  }
+                }
+              }}
+            >
+              <ExitToAppIcon color="primary" />
             </IconButton>
           </Tooltip>
         </Box>

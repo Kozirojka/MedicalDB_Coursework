@@ -10,6 +10,7 @@ import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import PersonIcon from '@mui/icons-material/Person';
 import TabSchedule from '../../components/Doctor/featureTab/TabSchedule';
 import TabPatientDetail from '../../components/Doctor/featureTab/TabPatientDetail';
+
 export default function DoctorDashboard() {
     const [activeTab, setActiveTab] = useState('pending');
     const [requests, setRequests] = useState([]);
@@ -42,19 +43,19 @@ export default function DoctorDashboard() {
         {
             key: 'pending',
             label: 'Очікують',
-            icon: <ViewListIcon style={{ fontSize: 40, color: '#4caf50' }} />,
+            icon: <ViewListIcon style={{ fontSize: 40 }} />, // видалено явний колір
             component:  <RequestForConfirm requests={requests} loading={loading} error={error} />
         },
         {
             key: 'schedule',
             label: 'Розклад',
-            icon: <CalendarTodayIcon style={{ fontSize: 40, color: '#4caf50' }}/>,
+            icon: <CalendarTodayIcon style={{ fontSize: 40 }} />, // видалено явний колір
             component: <TabSchedule/>
         },
         {
             key: 'patients',
             label: 'Пацієнти',
-            icon: <PersonIcon style={{ fontSize: 40, color: '#4caf50' }}/>,
+            icon: <PersonIcon style={{ fontSize: 40 }} />, // видалено явний колір
             component: <TabPatientDetail/>
         }
     ];
@@ -65,6 +66,7 @@ export default function DoctorDashboard() {
                 tabsConfig={tabsConfig}
                 activeTab={activeTab}
                 setActiveTab={setActiveTab}
+                onLogout={() => console.log('Logout clicked')}
             />
 
             <div className="main-content">
