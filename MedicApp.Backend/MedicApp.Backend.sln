@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MedicApp.Application", "Med
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MedicApp.Domain", "MedicApp.Domain\MedicApp.Domain.csproj", "{398C280C-8994-4C5B-978F-9744CD89967A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MedicApp.FakeDate", "MedicApp.FakeDate\MedicApp.FakeDate.csproj", "{71017C50-0C8E-4068-828D-B552B7D6A67F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{398C280C-8994-4C5B-978F-9744CD89967A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{398C280C-8994-4C5B-978F-9744CD89967A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{398C280C-8994-4C5B-978F-9744CD89967A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71017C50-0C8E-4068-828D-B552B7D6A67F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71017C50-0C8E-4068-828D-B552B7D6A67F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71017C50-0C8E-4068-828D-B552B7D6A67F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71017C50-0C8E-4068-828D-B552B7D6A67F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

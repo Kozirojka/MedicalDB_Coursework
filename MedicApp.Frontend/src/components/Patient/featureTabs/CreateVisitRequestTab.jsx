@@ -15,9 +15,6 @@ const CreateVisitRequestTab = () => {
         alignItems: 'center',
         mb: 3
       }}>
-        <Typography variant="h5" fontWeight="500">
-          Visit Requests
-        </Typography>
         
         <Button
           variant="contained"
@@ -32,10 +29,8 @@ const CreateVisitRequestTab = () => {
       
       <Divider sx={{ mb: 3 }} />
       
-      {/* Visit Requests Component */}
       <VisitRequestsComponent />
 
-      {/* Create Visit Modal */}
       <CreateVisitModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

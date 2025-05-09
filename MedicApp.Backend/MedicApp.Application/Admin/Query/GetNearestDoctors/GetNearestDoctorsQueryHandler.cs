@@ -32,7 +32,8 @@ public class GetNearestDoctorsQueryHandler : IRequestHandler<GetNearestDoctorsQu
     {
         var visitRequest = await _dbContext.MedicalHelpRequests
             .Include(v => v.Patient)
-            .ThenInclude(p => p.Account.Addresses)
+            .ThenInclude(p => p.Account)
+            .ThenInclude(p => p.Addresses)
             .FirstOrDefaultAsync(v => v.Id == request.requestId, cancellationToken);
 
         
@@ -59,10 +60,9 @@ public class GetNearestDoctorsQueryHandler : IRequestHandler<GetNearestDoctorsQu
         ValidateCoordinates(patientCoordinates, "Patient coordinates not found.");
 
         var doctors = await _dbContext.Doctors
+            .Include(d => d.Specializations)    
             .Include(d => d.Account)
             .ThenInclude(d => d.Addresses)
-            .Where(d => d.Account.Addresses.First().Country == patientAddress.Country &&
-                        d.Account.Addresses.First().City == patientAddress.City)
             .ToListAsync(cancellationToken);
         
         if (!doctors.Any())
@@ -97,7 +97,7 @@ public class GetNearestDoctorsQueryHandler : IRequestHandler<GetNearestDoctorsQu
                 DoctorId = doctor.Account.Id,
                 FirstName = doctor.Account.Firstname,
                 LastName = doctor.Account.Lastname,
-                Specialization = "Herolog",
+                Specialization = doctor.Specializations.First().Name,
                 Distance = distance
             });
         }

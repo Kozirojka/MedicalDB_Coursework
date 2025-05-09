@@ -4,6 +4,7 @@ using MedicApp.Api.Extension;
 using MedicApp.Application.LogReg.Command;
 using MedicApp.Application.LogReg.Command.CreatePatient;
 using MedicApp.Domain.Configurations;
+using MedicApp.FakeDate;
 using MedicApp.Infrastructure.Data;
 using MedicApp.Infrastructure.Models;
 using MedicApp.Infrastructure.Services.GoogleMapsApi;
@@ -21,6 +22,7 @@ builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.AddScoped<IGeocodingService, GeocodingService>();
 builder.Services.AddScoped<IRouteService, RouteService>();
 builder.Services.AddScoped<IPasswordService, PasswordService>();
+builder.Services.AddScoped<FakeDate>();
 builder.Services.AddHttpClient();
         
 builder.Services.Configure<GoogleMapsServiceSettings>(

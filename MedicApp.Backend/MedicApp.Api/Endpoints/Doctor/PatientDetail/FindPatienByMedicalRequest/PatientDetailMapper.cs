@@ -1,33 +1,8 @@
-namespace MedicApp.Api.Endpoints.Doctor.PatientDetail;
+namespace MedicApp.Api.Endpoints.Doctor.PatientDetail.FindPatienByMedicalRequest;
 
 public static class PatientDetailMapper
 {
     public static PatientDto PatientToDto(this Infrastructure.Models.Patient patient)
-    {
-        if (patient == null)
-            return null;
-            
-        return new PatientDto
-        {
-            Id = patient.Id,
-            AccountId = patient.AccountId,
-            FirstName = patient.Account?.Firstname,
-            LastName = patient.Account?.Lastname,
-            PhoneNumber = patient.Account?.Phonenumber,
-            Email = patient.Account?.Email,
-            Addresses = patient.Account?.Addresses.Select(a => new AddressDto
-            {
-                Country = a.Country,
-                City = a.City,
-                Street = a.Street,
-                BuildingNumber = a.Building,
-                ApartmentNumber = a.Appartaments,
-            }).ToList()
-        };
-    }
-    
-    
-    public static PatientDto PatientForPage(this Infrastructure.Models.Patient patient)
     {
         if (patient == null)
             return null;

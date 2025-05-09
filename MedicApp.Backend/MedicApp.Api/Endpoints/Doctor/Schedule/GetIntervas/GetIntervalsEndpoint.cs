@@ -28,7 +28,7 @@ public class GetIntervalsEndpoint : IEndpoint
             .ThenInclude(si => si.MedicalHelpRequests)
             .ThenInclude(si => si.Status)
             .Where(u => u.Date > DateOnly.FromDateTime(DateTime.Today))
-            .Where(u => doctor != null && u.DoctorId == doctor.Id)
+            .Where(u => u.DoctorId == doctor.Id)
             .ToList();
         
         var scheduleDtos = ScheduleMapper.MapSchedules(results);

@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using MedicApp.Api.Endpoints.Doctor.PatientDetail.FindPatienByMedicalRequest;
 using MedicApp.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
